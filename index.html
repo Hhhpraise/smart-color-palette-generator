@@ -22,23 +22,23 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             color: white;
         }
 
         .header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
@@ -46,46 +46,52 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
         .input-section {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            gap: 10px;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .color-input-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         #colorPicker {
-            width: 60px;
-            height: 60px;
-            border: none;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
+            background: none;
+            padding: 0;
+        }
+
+        #colorPicker::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        #colorPicker::-moz-color-swatch {
+            border: none;
+            border-radius: 6px;
         }
 
         #colorPicker:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
+            border-color: #667eea;
         }
 
         #hexInput {
-            font-size: 1.2rem;
-            padding: 15px 20px;
+            font-size: 1rem;
+            padding: 12px 15px;
             border: 2px solid #ddd;
-            border-radius: 10px;
-            width: 200px;
+            border-radius: 8px;
+            width: 120px;
             text-align: center;
             font-weight: bold;
             letter-spacing: 1px;
@@ -97,55 +103,14 @@
             border-color: #667eea;
         }
 
-        .algorithm-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .algorithm-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .algorithm-btn {
-            padding: 12px 24px;
+        .btn {
+            padding: 12px 18px;
             border: none;
-            border-radius: 25px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
-        }
-
-        .algorithm-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .algorithm-btn.active {
-            background: linear-gradient(45deg, #764ba2, #667eea);
-            transform: scale(1.05);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
         }
 
         .btn-primary {
@@ -163,42 +128,129 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        .algorithm-section {
+            text-align: center;
+        }
+
+        .algorithm-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .algorithm-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .algorithm-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .algorithm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .algorithm-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .preview-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .readability-score {
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .score-excellent { background: #26de81; color: white; }
+        .score-good { background: #f39c12; color: white; }
+        .score-poor { background: #e74c3c; color: white; }
+
+        .preview-mockup {
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            min-height: 150px;
+            transition: all 0.3s;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .palette-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
         .palette-title {
             text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
             color: #333;
         }
 
         .palette-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .color-swatch {
             aspect-ratio: 1;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .color-swatch:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
 
         .color-info {
@@ -206,12 +258,13 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             color: white;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
             transform: translateY(100%);
             transition: transform 0.3s;
+            font-size: 0.8rem;
         }
 
         .color-swatch:hover .color-info {
@@ -220,78 +273,90 @@
 
         .hex-code {
             font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .contrast-warning {
             background: #ff6b6b;
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            margin-top: 5px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-top: 3px;
         }
 
-        .preview-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .preview-mockup {
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
+        .export-section {
+            text-align: center;
+            margin-top: 15px;
         }
 
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 25px;
+            padding: 12px 20px;
             background: #26de81;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
             transform: translateX(400px);
             transition: transform 0.3s;
             z-index: 1000;
+            font-size: 0.9rem;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
-        .export-section {
-            text-align: center;
-            margin-top: 20px;
-        }
-
         .hidden {
             display: none;
         }
 
-        /* Responsive Design */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
 
             .input-section {
-                flex-direction: column;
+                justify-content: center;
             }
 
-            .color-input-group {
+            #hexInput {
+                width: 100px;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+
+            .algorithm-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .preview-header {
                 flex-direction: column;
                 text-align: center;
             }
 
-            #hexInput {
-                width: 250px;
+            .palette-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .input-section {
+                flex-direction: column;
+                gap: 15px;
             }
 
             .algorithm-buttons {
@@ -300,7 +365,7 @@
             }
 
             .algorithm-btn {
-                width: 200px;
+                width: 180px;
             }
         }
 
@@ -308,7 +373,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -316,8 +381,8 @@
             }
         }
 
-        .palette-grid.animate {
-            animation: fadeInUp 0.5s ease-out;
+        .animate {
+            animation: fadeInUp 0.4s ease-out;
         }
     </style>
 </head>
@@ -325,31 +390,46 @@
     <div class="container">
         <header class="header">
             <h1>🎨 Smart Color Palette Generator</h1>
-            <p>Create harmonious color schemes using advanced color theory</p>
+            <p>Create harmonious color schemes with smart color theory</p>
         </header>
 
         <div class="main-controls">
             <div class="input-section">
-                <div class="color-input-group">
-                    <input type="color" id="colorPicker" value="#FF5733">
-                    <input type="text" id="hexInput" placeholder="#FF5733" value="#FF5733">
-                </div>
+                <input type="color" id="colorPicker" value="#FF5733">
+                <input type="text" id="hexInput" placeholder="#FF5733" value="#FF5733">
+                <button class="btn btn-primary" id="generateBtn">Generate</button>
+                <button class="btn btn-secondary" id="randomBtn">Random</button>
             </div>
 
             <div class="algorithm-section">
                 <h3>Choose Color Harmony</h3>
                 <div class="algorithm-buttons">
-                    <button class="algorithm-btn active" data-algorithm="complementary">Complementary</button>
+                    <button class="algorithm-btn" data-algorithm="complementary">Complementary</button>
                     <button class="algorithm-btn" data-algorithm="analogous">Analogous</button>
                     <button class="algorithm-btn" data-algorithm="triadic">Triadic</button>
-                    <button class="algorithm-btn" data-algorithm="monochromatic">Monochromatic</button>
+                    <button class="algorithm-btn active" data-algorithm="monochromatic">Monochromatic</button>
                     <button class="algorithm-btn" data-algorithm="splitComplementary">Split-Complementary</button>
                 </div>
             </div>
+        </div>
 
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="generateBtn">Generate Palette</button>
-                <button class="btn btn-secondary" id="randomBtn">Random Inspiration</button>
+        <div class="preview-section hidden" id="previewSection">
+            <div class="preview-header">
+                <h2>Live Preview</h2>
+                <div class="readability-score" id="readabilityScore">Readability: Excellent</div>
+            </div>
+            <div class="preview-mockup" id="previewMockup">
+                <h3>Sample Website Design</h3>
+                <p>Experience how your color palette works in real designs. This preview shows contrast, readability, and visual harmony.</p>
+                <div style="margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="previewBtn1" style="padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Primary Action</button>
+                    <button id="previewBtn2" style="padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Secondary</button>
+                    <button id="previewBtn3" style="padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Accent</button>
+                    <button id="previewBtn4" style="padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Neutral</button>
+                </div>
+            </div>
+            <div class="preview-controls">
+                <button class="btn btn-secondary" id="shuffleColorsBtn">🔀 Shuffle Colors</button>
             </div>
         </div>
 
@@ -357,18 +437,25 @@
             <h2 class="palette-title" id="paletteTitle">Your Color Palette</h2>
             <div class="palette-grid" id="paletteGrid"></div>
             <div class="export-section">
-                <button class="btn btn-primary" id="exportPNG">Export as PNG</button>
-                <button class="btn btn-secondary" id="exportSVG">Export as SVG</button>
+                <button class="btn btn-primary" id="exportPNG">Export PNG</button>
+                <button class="btn btn-secondary" id="exportSVG">Export SVG</button>
             </div>
         </div>
 
-        <div class="preview-section hidden" id="previewSection">
-            <h2>Live Preview</h2>
-            <div class="preview-mockup" id="previewMockup">
-                <h3>Sample Website Header</h3>
-                <p>This is how your color palette might look in a real design. The colors work together harmoniously based on color theory principles.</p>
-                <button style="padding: 10px 20px; border: none; border-radius: 5px; margin: 10px 5px;">Button 1</button>
-                <button style="padding: 10px 20px; border: none; border-radius: 5px; margin: 10px 5px;">Button 2</button>
+        <div class="contact-section">
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+                <h3 style="margin-bottom: 15px; color: #333;">Connect With Me</h3>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://hhhpraise.github.io/portfolio/" target="_blank" style="text-decoration: none;">
+                        <button class="btn btn-primary">🚀 View Portfolio</button>
+                    </a>
+                    <a href="mailto:hhhpraise33@gmail.com" style="text-decoration: none;">
+                        <button class="btn btn-secondary">📧 Email Me</button>
+                    </a>
+                    <a href="https://github.com/hhhpraise" target="_blank" style="text-decoration: none;">
+                        <button class="btn" style="background: linear-gradient(45deg, #333, #555); color: white;">💻 GitHub</button>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -541,10 +628,20 @@
             }, 2000);
         }
 
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
         // Main Application Logic
         const app = {
-            currentAlgorithm: 'complementary',
+            currentAlgorithm: 'monochromatic',
             currentPalette: [],
+            shuffledPalette: [],
 
             init() {
                 this.bindEvents();
@@ -555,6 +652,7 @@
                 // Color input synchronization
                 document.getElementById('colorPicker').addEventListener('input', (e) => {
                     document.getElementById('hexInput').value = e.target.value.toUpperCase();
+                    this.generatePalette();
                 });
 
                 document.getElementById('hexInput').addEventListener('input', (e) => {
@@ -562,17 +660,19 @@
                     if (isValidHex(hex)) {
                         document.getElementById('colorPicker').value = hex;
                         e.target.style.borderColor = '#667eea';
+                        this.generatePalette();
                     } else {
                         e.target.style.borderColor = '#ff6b6b';
                     }
                 });
 
-                // Algorithm selection
+                // Algorithm selection with auto-generation
                 document.querySelectorAll('.algorithm-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.algorithm-btn').forEach(b => b.classList.remove('active'));
                         e.target.classList.add('active');
                         this.currentAlgorithm = e.target.dataset.algorithm;
+                        this.generatePalette();
                     });
                 });
 
@@ -589,6 +689,11 @@
                     this.generatePalette();
                 });
 
+                // Shuffle colors
+                document.getElementById('shuffleColorsBtn').addEventListener('click', () => {
+                    this.shuffleColors();
+                });
+
                 // Export buttons
                 document.getElementById('exportPNG').addEventListener('click', () => {
                     this.exportAsPNG();
@@ -603,6 +708,7 @@
                 const colorPicker = document.getElementById('colorPicker');
                 const hexInput = document.getElementById('hexInput');
                 hexInput.value = colorPicker.value.toUpperCase();
+                this.generatePalette();
             },
 
             generatePalette() {
@@ -610,7 +716,6 @@
                 const baseColor = hexInput.value;
 
                 if (!isValidHex(baseColor)) {
-                    alert('Please enter a valid HEX color code (e.g., #FF5733)');
                     return;
                 }
 
@@ -634,8 +739,99 @@
                 }
 
                 this.currentPalette = palette;
+                this.shuffledPalette = [...palette];
+                this.updatePreview(this.shuffledPalette);
                 this.displayPalette(palette);
-                this.updatePreview(palette);
+            },
+
+            updatePreview(palette) {
+                const mockup = document.getElementById('previewMockup');
+                const previewSection = document.getElementById('previewSection');
+
+                // Set background gradient
+                mockup.style.background = `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`;
+                mockup.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+
+                // Update buttons with different colors
+                const buttons = ['previewBtn1', 'previewBtn2', 'previewBtn3', 'previewBtn4'];
+                buttons.forEach((btnId, index) => {
+                    const btn = document.getElementById(btnId);
+                    if (btn && palette[index + 2]) {
+                        const color = palette[index + 2];
+                        btn.style.backgroundColor = color;
+                        btn.style.color = getContrastRatio(color, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+                    }
+                });
+
+                // Calculate readability score
+                this.updateReadabilityScore(palette);
+
+                previewSection.classList.remove('hidden');
+                previewSection.classList.add('animate');
+            },
+
+            updateReadabilityScore(palette) {
+                const scoreElement = document.getElementById('readabilityScore');
+                let totalScore = 0;
+                let comparisons = 0;
+
+                // Check contrast between background and text color
+                const bgColor = palette[0];
+                const textColor = getContrastRatio(bgColor, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+                const bgTextRatio = getContrastRatio(bgColor, textColor);
+
+                // Check button contrasts
+                let buttonScores = 0;
+                for (let i = 2; i < Math.min(6, palette.length); i++) {
+                    const btnColor = palette[i];
+                    const btnTextColor = getContrastRatio(btnColor, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+                    const btnRatio = getContrastRatio(btnColor, btnTextColor);
+
+                    if (btnRatio >= 7) buttonScores += 3;
+                    else if (btnRatio >= 4.5) buttonScores += 2;
+                    else if (btnRatio >= 3) buttonScores += 1;
+                    comparisons++;
+                }
+
+                // Check color harmony (contrast between palette colors)
+                for (let i = 0; i < Math.min(4, palette.length - 1); i++) {
+                    for (let j = i + 1; j < Math.min(4, palette.length); j++) {
+                        const ratio = getContrastRatio(palette[i], palette[j]);
+                        if (ratio >= 4.5) totalScore += 2;
+                        else if (ratio >= 3) totalScore += 1;
+                        comparisons++;
+                    }
+                }
+
+                // Include background-text score
+                if (bgTextRatio >= 7) totalScore += 3;
+                else if (bgTextRatio >= 4.5) totalScore += 2;
+                else if (bgTextRatio >= 3) totalScore += 1;
+                comparisons++;
+
+                totalScore += buttonScores;
+                const averageScore = totalScore / Math.max(1, comparisons);
+                let rating, className;
+
+                if (averageScore >= 2.2) {
+                    rating = 'Excellent';
+                    className = 'score-excellent';
+                } else if (averageScore >= 1.3) {
+                    rating = 'Good';
+                    className = 'score-good';
+                } else {
+                    rating = 'Needs Improvement';
+                    className = 'score-poor';
+                }
+
+                scoreElement.textContent = `Readability: ${rating}`;
+                scoreElement.className = `readability-score ${className}`;
+            },
+
+            shuffleColors() {
+                this.shuffledPalette = shuffleArray(this.currentPalette);
+                this.updatePreview(this.shuffledPalette);
+                showNotification('Colors shuffled! Check the new arrangement.');
             },
 
             displayPalette(palette) {
@@ -643,7 +839,7 @@
                 const grid = document.getElementById('paletteGrid');
                 const title = document.getElementById('paletteTitle');
 
-                title.textContent = `${this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1)} Color Palette`;
+                title.textContent = `${this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1)} Palette`;
 
                 grid.innerHTML = '';
                 grid.classList.add('animate');
@@ -674,23 +870,10 @@
                 });
 
                 container.classList.remove('hidden');
-                document.getElementById('previewSection').classList.remove('hidden');
 
                 setTimeout(() => {
                     grid.classList.remove('animate');
-                }, 500);
-            },
-
-            updatePreview(palette) {
-                const mockup = document.getElementById('previewMockup');
-                mockup.style.background = `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`;
-                mockup.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-
-                const buttons = mockup.querySelectorAll('button');
-                buttons[0].style.backgroundColor = palette[2];
-                buttons[0].style.color = getContrastRatio(palette[2], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-                buttons[1].style.backgroundColor = palette[3];
-                buttons[1].style.color = getContrastRatio(palette[3], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+                }, 400);
             },
 
             exportAsPNG() {
