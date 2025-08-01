@@ -123,6 +123,11 @@
             color: white;
         }
 
+        .btn-optimize {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -309,6 +314,10 @@
             transform: translateX(0);
         }
 
+        .notification.optimizing {
+            background: #667eea;
+        }
+
         .hidden {
             display: none;
         }
@@ -395,8 +404,8 @@
 
         <div class="main-controls">
             <div class="input-section">
-                <input type="color" id="colorPicker" value="#FF5733">
-                <input type="text" id="hexInput" placeholder="#FF5733" value="#FF5733">
+                <input type="color" id="colorPicker" value="#FDDCD7">
+                <input type="text" id="hexInput" placeholder="#FDDCD7" value="#FDDCD7">
                 <button class="btn btn-primary" id="generateBtn">Generate</button>
                 <button class="btn btn-secondary" id="randomBtn">Random</button>
             </div>
@@ -404,10 +413,10 @@
             <div class="algorithm-section">
                 <h3>Choose Color Harmony</h3>
                 <div class="algorithm-buttons">
+                    <button class="algorithm-btn active" data-algorithm="monochromatic">Monochromatic</button>
                     <button class="algorithm-btn" data-algorithm="complementary">Complementary</button>
                     <button class="algorithm-btn" data-algorithm="analogous">Analogous</button>
                     <button class="algorithm-btn" data-algorithm="triadic">Triadic</button>
-                    <button class="algorithm-btn active" data-algorithm="monochromatic">Monochromatic</button>
                     <button class="algorithm-btn" data-algorithm="splitComplementary">Split-Complementary</button>
                 </div>
             </div>
@@ -415,7 +424,7 @@
 
         <div class="preview-section hidden" id="previewSection">
             <div class="preview-header">
-                <h2>Live Preview</h2>
+                <h2>Live Preview (Auto-Optimized)</h2>
                 <div class="readability-score" id="readabilityScore">Readability: Excellent</div>
             </div>
             <div class="preview-mockup" id="previewMockup">
@@ -429,6 +438,7 @@
                 </div>
             </div>
             <div class="preview-controls">
+                <button class="btn btn-optimize" id="optimizeBtn">🎯 Find Best Readability</button>
                 <button class="btn btn-secondary" id="shuffleColorsBtn">🔀 Shuffle Colors</button>
             </div>
         </div>
@@ -619,13 +629,13 @@
             return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
         }
 
-        function showNotification(message) {
+        function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
-            notification.classList.add('show');
+            notification.className = `notification show ${type === 'optimizing' ? 'optimizing' : ''}`;
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 2000);
+            }, type === 'optimizing' ? 3000 : 2000);
         }
 
         function shuffleArray(array) {
@@ -637,11 +647,26 @@
             return newArray;
         }
 
+        // Permutation generator for finding all possible arrangements
+        function* permutations(arr) {
+            if (arr.length <= 1) {
+                yield arr;
+            } else {
+                for (let i = 0; i < arr.length; i++) {
+                    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
+                    for (const perm of permutations(rest)) {
+                        yield [arr[i], ...perm];
+                    }
+                }
+            }
+        }
+
         // Main Application Logic
         const app = {
             currentAlgorithm: 'monochromatic',
             currentPalette: [],
             shuffledPalette: [],
+            bestReadabilityArrangement: [],
 
             init() {
                 this.bindEvents();
@@ -689,6 +714,11 @@
                     this.generatePalette();
                 });
 
+                // Optimize readability
+                document.getElementById('optimizeBtn').addEventListener('click', () => {
+                    this.optimizeReadability();
+                });
+
                 // Shuffle colors
                 document.getElementById('shuffleColorsBtn').addEventListener('click', () => {
                     this.shuffleColors();
@@ -711,67 +741,7 @@
                 this.generatePalette();
             },
 
-            generatePalette() {
-                const hexInput = document.getElementById('hexInput');
-                const baseColor = hexInput.value;
-
-                if (!isValidHex(baseColor)) {
-                    return;
-                }
-
-                let palette = [];
-                switch (this.currentAlgorithm) {
-                    case 'complementary':
-                        palette = ColorTheory.complementary(baseColor);
-                        break;
-                    case 'analogous':
-                        palette = ColorTheory.analogous(baseColor);
-                        break;
-                    case 'triadic':
-                        palette = ColorTheory.triadic(baseColor);
-                        break;
-                    case 'monochromatic':
-                        palette = ColorTheory.monochromatic(baseColor);
-                        break;
-                    case 'splitComplementary':
-                        palette = ColorTheory.splitComplementary(baseColor);
-                        break;
-                }
-
-                this.currentPalette = palette;
-                this.shuffledPalette = [...palette];
-                this.updatePreview(this.shuffledPalette);
-                this.displayPalette(palette);
-            },
-
-            updatePreview(palette) {
-                const mockup = document.getElementById('previewMockup');
-                const previewSection = document.getElementById('previewSection');
-
-                // Set background gradient
-                mockup.style.background = `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`;
-                mockup.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-
-                // Update buttons with different colors
-                const buttons = ['previewBtn1', 'previewBtn2', 'previewBtn3', 'previewBtn4'];
-                buttons.forEach((btnId, index) => {
-                    const btn = document.getElementById(btnId);
-                    if (btn && palette[index + 2]) {
-                        const color = palette[index + 2];
-                        btn.style.backgroundColor = color;
-                        btn.style.color = getContrastRatio(color, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-                    }
-                });
-
-                // Calculate readability score
-                this.updateReadabilityScore(palette);
-
-                previewSection.classList.remove('hidden');
-                previewSection.classList.add('animate');
-            },
-
-            updateReadabilityScore(palette) {
-                const scoreElement = document.getElementById('readabilityScore');
+            calculateReadabilityScore(palette) {
                 let totalScore = 0;
                 let comparisons = 0;
 
@@ -811,21 +781,143 @@
 
                 totalScore += buttonScores;
                 const averageScore = totalScore / Math.max(1, comparisons);
-                let rating, className;
 
-                if (averageScore >= 2.2) {
-                    rating = 'Excellent';
-                    className = 'score-excellent';
-                } else if (averageScore >= 1.3) {
-                    rating = 'Good';
-                    className = 'score-good';
-                } else {
-                    rating = 'Needs Improvement';
-                    className = 'score-poor';
+                return {
+                    score: averageScore,
+                    rating: averageScore >= 2.2 ? 'Excellent' : (averageScore >= 1.3 ? 'Good' : 'Needs Improvement'),
+                    className: averageScore >= 2.2 ? 'score-excellent' : (averageScore >= 1.3 ? 'score-good' : 'score-poor')
+                };
+            },
+
+            findBestReadabilityArrangement(palette) {
+                let bestArrangement = [...palette];
+                let bestScore = this.calculateReadabilityScore(palette);
+                let excellentFound = false;
+
+                // Generate a reasonable number of random permutations to test
+                // Testing all permutations of 6 colors would be 720 combinations
+                const maxAttempts = Math.min(720, 200); // Limit to 200 for performance
+
+                for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                    const testArrangement = shuffleArray(palette);
+                    const testScore = this.calculateReadabilityScore(testArrangement);
+
+                    if (testScore.score > bestScore.score) {
+                        bestScore = testScore;
+                        bestArrangement = [...testArrangement];
+
+                        // If we found an excellent arrangement, we can stop early
+                        if (testScore.rating === 'Excellent') {
+                            excellentFound = true;
+                            break;
+                        }
+                    }
                 }
 
-                scoreElement.textContent = `Readability: ${rating}`;
-                scoreElement.className = `readability-score ${className}`;
+                return {
+                    arrangement: bestArrangement,
+                    score: bestScore,
+                    excellentFound: excellentFound
+                };
+            },
+
+            generatePalette() {
+                const hexInput = document.getElementById('hexInput');
+                const baseColor = hexInput.value;
+
+                if (!isValidHex(baseColor)) {
+                    return;
+                }
+
+                let palette = [];
+                switch (this.currentAlgorithm) {
+                    case 'complementary':
+                        palette = ColorTheory.complementary(baseColor);
+                        break;
+                    case 'analogous':
+                        palette = ColorTheory.analogous(baseColor);
+                        break;
+                    case 'triadic':
+                        palette = ColorTheory.triadic(baseColor);
+                        break;
+                    case 'monochromatic':
+                        palette = ColorTheory.monochromatic(baseColor);
+                        break;
+                    case 'splitComplementary':
+                        palette = ColorTheory.splitComplementary(baseColor);
+                        break;
+                }
+
+                this.currentPalette = palette;
+
+                // Automatically find the best readability arrangement
+                const bestResult = this.findBestReadabilityArrangement(palette);
+                this.bestReadibilityArrangement = bestResult.arrangement;
+                this.shuffledPalette = [...bestResult.arrangement];
+
+                this.updatePreview(this.shuffledPalette);
+                this.displayPalette(palette);
+
+                // Show notification if excellent readability was found
+                if (bestResult.excellentFound) {
+                    showNotification('🎯 Excellent readability arrangement found automatically!');
+                }
+            },
+
+            optimizeReadability() {
+                if (this.currentPalette.length === 0) {
+                    showNotification('Please generate a palette first!', 'error');
+                    return;
+                }
+
+                showNotification('🔍 Searching for optimal readability...', 'optimizing');
+
+                // Use setTimeout to allow the notification to show before heavy computation
+                setTimeout(() => {
+                    const bestResult = this.findBestReadabilityArrangement(this.currentPalette);
+                    this.shuffledPalette = [...bestResult.arrangement];
+                    this.updatePreview(this.shuffledPalette);
+
+                    const message = bestResult.excellentFound
+                        ? '🎯 Found arrangement with excellent readability!'
+                        : `✨ Found best possible arrangement (${bestResult.score.rating})`;
+
+                    showNotification(message);
+                }, 100);
+            },
+
+            updatePreview(palette) {
+                const mockup = document.getElementById('previewMockup');
+                const previewSection = document.getElementById('previewSection');
+
+                // Set background gradient
+                mockup.style.background = `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`;
+                mockup.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+
+                // Update buttons with different colors
+                const buttons = ['previewBtn1', 'previewBtn2', 'previewBtn3', 'previewBtn4'];
+                buttons.forEach((btnId, index) => {
+                    const btn = document.getElementById(btnId);
+                    if (btn && palette[index + 2]) {
+                        const color = palette[index + 2];
+                        btn.style.backgroundColor = color;
+                        btn.style.color = getContrastRatio(color, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+                    }
+                });
+
+                // Calculate and display readability score
+                this.updateReadabilityScore(palette);
+
+                previewSection.classList.remove('hidden');
+                previewSection.classList.add('animate');
+            },
+
+            updateReadabilityScore(palette) {
+                const scoreElement = document.getElementById('readabilityScore');
+                const scoreResult = this.calculateReadabilityScore(palette);
+
+                scoreElement.textContent = `Readability: ${scoreResult.rating}`;
+                scoreElement.className = `readability-score ${scoreResult.className}`;
             },
 
             shuffleColors() {
