@@ -614,7 +614,7 @@ optimizeReadability() {
         // Add footer
         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.font = '16px Arial';
-        ctx.fillText('Generated with Chroma Glass Color Studio', canvas.width / 2, canvas.height - 30);
+        ctx.fillText('Generated with Hhhpraise Color Studio', canvas.width / 2, canvas.height - 30);
 
         // Download
         const link = document.createElement('a');
@@ -684,7 +684,7 @@ optimizeReadability() {
         svgContent += `<text x="${svgWidth/2}" y="100" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="36" font-weight="bold" fill="rgba(255,255,255,0.9)">${this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1)} Palette</text>`;
 
         // Footer
-        svgContent += `<text x="${svgWidth/2}" y="${svgHeight - 30}" text-anchor="middle" font-family="Arial" font-size="16" fill="rgba(255,255,255,0.6)">Generated with Chroma Glass Color Studio</text>`;
+        svgContent += `<text x="${svgWidth/2}" y="${svgHeight - 30}" text-anchor="middle" font-family="Arial" font-size="16" fill="rgba(255,255,255,0.6)">Generated with Hhhpraise - Color Studio</text>`;
 
         svgContent += '</svg>';
 
