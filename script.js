@@ -1,14 +1,13 @@
-// Color Theory Algorithms
+'use strict';
+
+// ─── Color Theory ────────────────────────────────────────────────────────────
 class ColorTheory {
     static hexToHsl(hex) {
         const r = parseInt(hex.slice(1, 3), 16) / 255;
         const g = parseInt(hex.slice(3, 5), 16) / 255;
         const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
         let h, s, l = (max + min) / 2;
-
         if (max === min) {
             h = s = 0;
         } else {
@@ -21,698 +20,646 @@ class ColorTheory {
             }
             h /= 6;
         }
-
         return [h * 360, s * 100, l * 100];
     }
 
+    // FIX: use safe modulo so negative hue values wrap correctly
     static hslToHex(h, s, l) {
-        h = h % 360;
-        s = s / 100;
-        l = l / 100;
-
+        h = ((h % 360) + 360) % 360;
+        s /= 100; l /= 100;
         const c = (1 - Math.abs(2 * l - 1)) * s;
         const x = c * (1 - Math.abs((h / 60) % 2 - 1));
         const m = l - c / 2;
         let r = 0, g = 0, b = 0;
-
-        if (0 <= h && h < 60) {
-            r = c; g = x; b = 0;
-        } else if (60 <= h && h < 120) {
-            r = x; g = c; b = 0;
-        } else if (120 <= h && h < 180) {
-            r = 0; g = c; b = x;
-        } else if (180 <= h && h < 240) {
-            r = 0; g = x; b = c;
-        } else if (240 <= h && h < 300) {
-            r = x; g = 0; b = c;
-        } else if (300 <= h && h < 360) {
-            r = c; g = 0; b = x;
-        }
-
-        r = Math.round((r + m) * 255);
-        g = Math.round((g + m) * 255);
-        b = Math.round((b + m) * 255);
-
-        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        if      (h < 60)  { r = c; g = x; }
+        else if (h < 120) { r = x; g = c; }
+        else if (h < 180) { g = c; b = x; }
+        else if (h < 240) { g = x; b = c; }
+        else if (h < 300) { r = x; b = c; }
+        else              { r = c; b = x; }
+        return '#' + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('');
     }
 
-    static complementary(baseColor) {
-        const [h, s, l] = this.hexToHsl(baseColor);
+    static complementary(hex) {
+        const [h, s, l] = this.hexToHsl(hex);
         return [
-            baseColor,
-            this.hslToHex((h + 180) % 360, s, l),
+            hex,
+            this.hslToHex(h + 180, s, l),
             this.hslToHex(h, Math.max(20, s - 20), Math.min(80, l + 10)),
-            this.hslToHex((h + 180) % 360, Math.max(20, s - 20), Math.min(80, l + 10)),
+            this.hslToHex(h + 180, Math.max(20, s - 20), Math.min(80, l + 10)),
             this.hslToHex(h, s, Math.max(20, l - 20)),
-            this.hslToHex((h + 180) % 360, s, Math.max(20, l - 20))
+            this.hslToHex(h + 180, s, Math.max(20, l - 20)),
         ];
     }
 
-    static analogous(baseColor) {
-        const [h, s, l] = this.hexToHsl(baseColor);
+    static analogous(hex) {
+        const [h, s, l] = this.hexToHsl(hex);
         return [
-            this.hslToHex((h - 60 + 360) % 360, s, l),
-            this.hslToHex((h - 30 + 360) % 360, s, l),
-            baseColor,
-            this.hslToHex((h + 30) % 360, s, l),
-            this.hslToHex((h + 60) % 360, s, l),
-            this.hslToHex(h, Math.max(20, s - 30), Math.min(90, l + 15))
+            this.hslToHex(h - 60, s, l),
+            this.hslToHex(h - 30, s, l),
+            hex,
+            this.hslToHex(h + 30, s, l),
+            this.hslToHex(h + 60, s, l),
+            this.hslToHex(h, Math.max(20, s - 30), Math.min(90, l + 15)),
         ];
     }
 
-    static triadic(baseColor) {
-        const [h, s, l] = this.hexToHsl(baseColor);
+    static triadic(hex) {
+        const [h, s, l] = this.hexToHsl(hex);
         return [
-            baseColor,
-            this.hslToHex((h + 120) % 360, s, l),
-            this.hslToHex((h + 240) % 360, s, l),
+            hex,
+            this.hslToHex(h + 120, s, l),
+            this.hslToHex(h + 240, s, l),
             this.hslToHex(h, Math.max(30, s - 20), Math.min(85, l + 15)),
-            this.hslToHex((h + 120) % 360, Math.max(30, s - 20), Math.min(85, l + 15)),
-            this.hslToHex((h + 240) % 360, Math.max(30, s - 20), Math.min(85, l + 15))
+            this.hslToHex(h + 120, Math.max(30, s - 20), Math.min(85, l + 15)),
+            this.hslToHex(h + 240, Math.max(30, s - 20), Math.min(85, l + 15)),
         ];
     }
 
-    static monochromatic(baseColor) {
-        const [h, s, l] = this.hexToHsl(baseColor);
+    static monochromatic(hex) {
+        const [h, s, l] = this.hexToHsl(hex);
         return [
             this.hslToHex(h, s, Math.min(90, l + 30)),
             this.hslToHex(h, s, Math.min(80, l + 15)),
-            baseColor,
+            hex,
             this.hslToHex(h, s, Math.max(20, l - 15)),
             this.hslToHex(h, s, Math.max(10, l - 30)),
-            this.hslToHex(h, Math.max(20, s - 30), l)
+            this.hslToHex(h, Math.max(20, s - 30), l),
         ];
     }
 
-    static splitComplementary(baseColor) {
-        const [h, s, l] = this.hexToHsl(baseColor);
-        const comp = (h + 180) % 360;
+    static splitComplementary(hex) {
+        const [h, s, l] = this.hexToHsl(hex);
+        const comp = h + 180;
         return [
-            baseColor,
-            this.hslToHex((comp - 30 + 360) % 360, s, l),
-            this.hslToHex((comp + 30) % 360, s, l),
+            hex,
+            this.hslToHex(comp - 30, s, l),
+            this.hslToHex(comp + 30, s, l),
             this.hslToHex(h, Math.max(20, s - 20), Math.min(85, l + 10)),
-            this.hslToHex((comp - 30 + 360) % 360, Math.max(20, s - 20), Math.min(85, l + 10)),
-            this.hslToHex((comp + 30) % 360, Math.max(20, s - 20), Math.min(85, l + 10))
+            this.hslToHex(comp - 30, Math.max(20, s - 20), Math.min(85, l + 10)),
+            this.hslToHex(comp + 30, Math.max(20, s - 20), Math.min(85, l + 10)),
         ];
     }
 }
 
-// Utility Functions
-function getContrastRatio(color1, color2) {
-    const rgb1 = hexToRgb(color1);
-    const rgb2 = hexToRgb(color2);
+// ─── Utilities ───────────────────────────────────────────────────────────────
+function hexToRgb(hex) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+}
+
+// FIX: WCAG 2.1 uses 0.04045, not 0.03928
+function getLuminance(r, g, b) {
+    return [r, g, b].reduce((sum, c, i) => {
+        c /= 255;
+        c = c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        return sum + c * [0.2126, 0.7152, 0.0722][i];
+    }, 0);
+}
+
+function getContrastRatio(hex1, hex2) {
+    const rgb1 = hexToRgb(hex1), rgb2 = hexToRgb(hex2);
+    if (!rgb1 || !rgb2) return 1;
     const l1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
     const l2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
     return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
-function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
-
-function getLuminance(r, g, b) {
-    const [rs, gs, bs] = [r, g, b].map(c => {
-        c = c / 255;
-        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+// Picks white or black based on whichever actually has higher contrast
+function bestTextColor(bgHex) {
+    return getContrastRatio(bgHex, '#FFFFFF') >= getContrastRatio(bgHex, '#000000')
+        ? '#FFFFFF' : '#000000';
 }
 
 function isValidHex(hex) {
     return /^#[0-9A-F]{6}$/i.test(hex);
 }
 
+// FIX: was 16777215, which excludes #FFFFFF
 function generateRandomColor() {
-    return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    return '#' + Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
 }
 
-function showNotification(message) {
-    const toast = document.getElementById('notificationToast');
-    const messageSpan = toast.querySelector('.toast-message');
-
-    messageSpan.textContent = message;
-    toast.classList.add('show');
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-function shuffleArray(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
+function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        [a[i], a[j]] = [a[j], a[i]];
     }
-    return newArray;
+    return a;
 }
 
-// Color brightness calculator
-function getColorBrightness(hex) {
-    const rgb = hexToRgb(hex);
-    return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
-// Main Application Logic
+// FIX: clipboard fallback for HTTP or older browsers
+async function copyToClipboard(text) {
+    if (navigator.clipboard?.writeText) {
+        return navigator.clipboard.writeText(text);
+    }
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(el);
+    el.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(el);
+    if (!ok) throw new Error('Copy failed');
+}
+
+// ─── URL State (shareable palettes) ──────────────────────────────────────────
+function saveState(color, algorithm) {
+    const p = new URLSearchParams({ c: color.slice(1), a: algorithm });
+    history.replaceState(null, '', `?${p}`);
+}
+
+function loadState() {
+    const p = new URLSearchParams(location.search);
+    const color = p.get('c') ? `#${p.get('c')}` : null;
+    const algorithm = p.get('a') || null;
+    return { color, algorithm };
+}
+
+// ─── Notification ─────────────────────────────────────────────────────────────
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('notificationToast');
+    const icon = toast.querySelector('i');
+    const span = toast.querySelector('.toast-message');
+    icon.className = `fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}`;
+    icon.style.color = type === 'error' ? '#FF3B30' : '#34C759';
+    span.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ─── Main App ─────────────────────────────────────────────────────────────────
 const app = {
     currentAlgorithm: 'monochromatic',
     currentPalette: [],
-    shuffledPalette: [],
-    bestReadabilityArrangement: [],
+    displayedArrangement: [],
 
     init() {
-    this.bindEvents();
-    this.bindKeyboardShortcuts();
-    this.syncColorInputs();
-    this.applyWebsiteColors(this.currentPalette);
-},
+        this.bindEvents();
+        this.bindKeyboardShortcuts();
+
+        // Restore from URL if present
+        const state = loadState();
+        if (state.color && isValidHex(state.color)) {
+            document.getElementById('colorPicker').value = state.color;
+            document.getElementById('hexInput').value = state.color.toUpperCase();
+        }
+        if (state.algorithm) {
+            this.currentAlgorithm = state.algorithm;
+            document.querySelectorAll('.harmony-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.algorithm === state.algorithm);
+            });
+        }
+
+        const initial = document.getElementById('colorPicker').value;
+        document.getElementById('colorPreview').style.backgroundColor = initial;
+        document.getElementById('hexInput').value = initial.toUpperCase();
+        this.generatePalette();
+    },
 
     bindEvents() {
-        // Color input synchronization
-        document.getElementById('colorPicker').addEventListener('input', (e) => {
+        const picker  = document.getElementById('colorPicker');
+        const hexIn   = document.getElementById('hexInput');
+        const preview = document.getElementById('colorPreview');
+
+        picker.addEventListener('input', (e) => {
             const hex = e.target.value.toUpperCase();
-            document.getElementById('hexInput').value = hex;
-            document.getElementById('colorPreview').style.backgroundColor = hex;
+            hexIn.value = hex;
+            preview.style.backgroundColor = hex;
             this.generatePalette();
         });
 
-        document.getElementById('hexInput').addEventListener('input', (e) => {
+        // FIX: debounce hex input — was calling generatePalette on every keystroke
+        const debouncedGenerate = debounce(() => this.generatePalette(), 150);
+        hexIn.addEventListener('input', (e) => {
             const hex = e.target.value.toUpperCase();
             if (isValidHex(hex)) {
-                document.getElementById('colorPicker').value = hex;
-                document.getElementById('colorPreview').style.backgroundColor = hex;
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                this.generatePalette();
+                picker.value = hex;
+                preview.style.backgroundColor = hex;
+                hexIn.style.borderColor = '';
+                debouncedGenerate();
             } else {
-                e.target.style.borderColor = '#FF3B30';
+                hexIn.style.borderColor = '#FF3B30';
             }
         });
 
-        // Algorithm selection
+        // FIX: use `btn` from forEach closure, not e.target (which can be the <i> icon)
         document.querySelectorAll('.harmony-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 document.querySelectorAll('.harmony-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                this.currentAlgorithm = e.target.dataset.algorithm;
+                btn.classList.add('active');
+                this.currentAlgorithm = btn.dataset.algorithm;
                 this.generatePalette();
             });
         });
 
-        // Generate palette
-        document.getElementById('generateBtn').addEventListener('click', () => {
-            this.generatePalette();
-        });
+        document.getElementById('generateBtn').addEventListener('click', () => this.generatePalette());
 
-        // Random color
         document.getElementById('randomBtn').addEventListener('click', () => {
-            const randomColor = generateRandomColor();
-            document.getElementById('colorPicker').value = randomColor;
-            document.getElementById('hexInput').value = randomColor;
-            document.getElementById('colorPreview').style.backgroundColor = randomColor;
+            const color = generateRandomColor();
+            picker.value = color;
+            hexIn.value = color.toUpperCase();
+            preview.style.backgroundColor = color;
             this.generatePalette();
         });
 
-        // Optimize readability
-        document.getElementById('optimizeBtn').addEventListener('click', () => {
-            this.optimizeReadability();
-        });
+        document.getElementById('optimizeBtn').addEventListener('click', () => this.optimizeReadability());
+        document.getElementById('shuffleColorsBtn').addEventListener('click', () => this.shuffleColors());
+        document.getElementById('exportPNG').addEventListener('click', () => this.exportAsPNG());
+        document.getElementById('exportSVG').addEventListener('click', () => this.exportAsSVG());
+        document.getElementById('copyAllBtn').addEventListener('click', () => this.copyAllColors());
 
-        // Shuffle colors
-        document.getElementById('shuffleColorsBtn').addEventListener('click', () => {
-            this.shuffleColors();
-        });
+        const cssBtn = document.getElementById('copyCSSBtn');
+        if (cssBtn) cssBtn.addEventListener('click', () => this.copyCSSVariables());
 
-        // Export buttons
-        document.getElementById('exportPNG').addEventListener('click', () => {
-            this.exportAsPNG();
-        });
+        const shareBtn = document.getElementById('shareBtn');
+        if (shareBtn) shareBtn.addEventListener('click', () => this.sharePalette());
+    },
 
-        document.getElementById('exportSVG').addEventListener('click', () => {
-            this.exportAsSVG();
-        });
-
-        // Copy all colors
-        document.getElementById('copyAllBtn').addEventListener('click', () => {
-            this.copyAllColors();
+    bindKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Space = random (only when not in an input)
+            if (e.code === 'Space' && !e.target.matches('input, textarea, button')) {
+                e.preventDefault();
+                document.getElementById('randomBtn').click();
+            }
+            // Enter in hex field = generate
+            if (e.code === 'Enter' && document.activeElement === document.getElementById('hexInput')) {
+                e.preventDefault();
+                this.generatePalette();
+            }
+            // 1–5 = switch harmony mode (only when not in input)
+            if (e.code >= 'Digit1' && e.code <= 'Digit5' && !e.target.matches('input, textarea')) {
+                const idx = parseInt(e.code.slice(-1)) - 1;
+                document.querySelectorAll('.harmony-btn')[idx]?.click();
+            }
         });
     },
 
-    syncColorInputs() {
-        const colorPicker = document.getElementById('colorPicker');
-        const hexInput = document.getElementById('hexInput');
-        const colorPreview = document.getElementById('colorPreview');
+    generatePalette() {
+        const hex = document.getElementById('hexInput').value.toUpperCase();
+        if (!isValidHex(hex)) {
+            showNotification('Enter a valid hex code — e.g. #FF5733', 'error');
+            return;
+        }
 
-        hexInput.value = colorPicker.value.toUpperCase();
-        colorPreview.style.backgroundColor = colorPicker.value;
-        this.generatePalette();
+        const generators = {
+            complementary:     () => ColorTheory.complementary(hex),
+            analogous:         () => ColorTheory.analogous(hex),
+            triadic:           () => ColorTheory.triadic(hex),
+            monochromatic:     () => ColorTheory.monochromatic(hex),
+            splitComplementary:() => ColorTheory.splitComplementary(hex),
+        };
+
+        this.currentPalette = (generators[this.currentAlgorithm] ?? generators.monochromatic)();
+
+        document.getElementById('paletteName').textContent =
+            this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1);
+
+        const best = this.findBestReadabilityArrangement(this.currentPalette);
+        this.displayedArrangement = best.arrangement;
+
+        this.applyWebsiteColors(this.displayedArrangement);
+        this.displayPalette(this.currentPalette);
+        this.updateReadabilityUI(best.score);
+
+        saveState(hex, this.currentAlgorithm);
     },
 
     calculateReadabilityScore(palette) {
         if (palette.length < 3) return { score: 0, rating: 'Poor', className: 'score-poor' };
 
-        let totalScore = 0;
-        let comparisons = 0;
+        let total = 0, count = 0;
 
-        // Background to text contrast
-        const bgColor = palette[0];
-        const textColor = getContrastRatio(bgColor, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-        const bgTextRatio = getContrastRatio(bgColor, textColor);
+        // Background vs its best text color
+        const bgRatio = getContrastRatio(palette[0], bestTextColor(palette[0]));
+        total += bgRatio >= 7 ? 3 : bgRatio >= 4.5 ? 2 : bgRatio >= 3 ? 1 : 0;
+        count++;
 
-        // Button contrasts
-        let buttonScores = 0;
+        // Button colors vs their text
         for (let i = 2; i < Math.min(5, palette.length); i++) {
-            const btnColor = palette[i];
-            const btnTextColor = getContrastRatio(btnColor, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-            const btnRatio = getContrastRatio(btnColor, btnTextColor);
-
-            if (btnRatio >= 7) buttonScores += 3;
-            else if (btnRatio >= 4.5) buttonScores += 2;
-            else if (btnRatio >= 3) buttonScores += 1;
-            comparisons++;
+            const ratio = getContrastRatio(palette[i], bestTextColor(palette[i]));
+            total += ratio >= 7 ? 3 : ratio >= 4.5 ? 2 : ratio >= 3 ? 1 : 0;
+            count++;
         }
 
-        // Color harmony contrast
+        // Adjacent pair contrasts
         for (let i = 0; i < Math.min(4, palette.length - 1); i++) {
             for (let j = i + 1; j < Math.min(4, palette.length); j++) {
                 const ratio = getContrastRatio(palette[i], palette[j]);
-                if (ratio >= 4.5) totalScore += 2;
-                else if (ratio >= 3) totalScore += 1;
-                comparisons++;
+                total += ratio >= 4.5 ? 2 : ratio >= 3 ? 1 : 0;
+                count++;
             }
         }
 
-        // Include background-text score
-        if (bgTextRatio >= 7) totalScore += 3;
-        else if (bgTextRatio >= 4.5) totalScore += 2;
-        else if (bgTextRatio >= 3) totalScore += 1;
-        comparisons++;
-
-        totalScore += buttonScores;
-        const averageScore = totalScore / Math.max(1, comparisons);
-
+        const avg = total / Math.max(1, count);
+        const rating = avg >= 2.2 ? 'Excellent' : avg >= 1.3 ? 'Good' : 'Needs Improvement';
         return {
-            score: averageScore,
-            rating: averageScore >= 2.2 ? 'Excellent' : (averageScore >= 1.3 ? 'Good' : 'Needs Improvement'),
-            className: averageScore >= 2.2 ? 'score-excellent' : (averageScore >= 1.3 ? 'score-good' : 'score-poor')
+            score: avg,
+            rating,
+            className: avg >= 2.2 ? 'score-excellent' : avg >= 1.3 ? 'score-good' : 'score-poor',
         };
     },
 
+    // FIX: reduced from 200 to 120 iterations; still finds excellent arrangements
+    // but more importantly this is now only called when palette changes, not on every keypress
     findBestReadabilityArrangement(palette) {
-        let bestArrangement = [...palette];
-        let bestScore = this.calculateReadabilityScore(palette);
-        let excellentFound = false;
-
-        // Test random permutations (limited for performance)
-        const maxAttempts = Math.min(200, 720);
-
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            const testArrangement = shuffleArray(palette);
-            const testScore = this.calculateReadabilityScore(testArrangement);
-
-            if (testScore.score > bestScore.score) {
-                bestScore = testScore;
-                bestArrangement = [...testArrangement];
-
-                if (testScore.rating === 'Excellent') {
-                    excellentFound = true;
-                    break;
-                }
+        let best = { arrangement: [...palette], score: this.calculateReadabilityScore(palette) };
+        for (let i = 0; i < 120; i++) {
+            const candidate = shuffleArray(palette);
+            const score = this.calculateReadabilityScore(candidate);
+            if (score.score > best.score.score) {
+                best = { arrangement: candidate, score };
+                if (score.rating === 'Excellent') break;
             }
         }
-
-        return {
-            arrangement: bestArrangement,
-            score: bestScore,
-            excellentFound: excellentFound
-        };
+        return best;
     },
 
-    generatePalette() {
-        const hexInput = document.getElementById('hexInput');
-        const baseColor = hexInput.value.toUpperCase();
-
-        if (!isValidHex(baseColor)) {
-            showNotification('Please enter a valid hex color (e.g., #FDDCD7)');
-            return;
-        }
-
-        let palette = [];
-        switch (this.currentAlgorithm) {
-            case 'complementary':
-                palette = ColorTheory.complementary(baseColor);
-                break;
-            case 'analogous':
-                palette = ColorTheory.analogous(baseColor);
-                break;
-            case 'triadic':
-                palette = ColorTheory.triadic(baseColor);
-                break;
-            case 'monochromatic':
-                palette = ColorTheory.monochromatic(baseColor);
-                break;
-            case 'splitComplementary':
-                palette = ColorTheory.splitComplementary(baseColor);
-                break;
-            default:
-                palette = ColorTheory.monochromatic(baseColor);
-        }
-
-        this.currentPalette = palette;
-        document.getElementById('paletteName').textContent = this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1);
-
-        // Find best readability arrangement
-        const bestResult = this.findBestReadabilityArrangement(palette);
-        this.bestReadabilityArrangement = bestResult.arrangement;
-        this.shuffledPalette = [...bestResult.arrangement];
-
-        // Apply colors to entire website preview
-        this.applyWebsiteColors(this.shuffledPalette);
-
-        // Display palette
-        this.displayPalette(palette);
-
-        // Update readability score
-        const scoreResult = this.calculateReadabilityScore(this.shuffledPalette);
-        const scoreElement = document.getElementById('readabilityScore');
-        scoreElement.innerHTML = `<i class="fas fa-check-circle"></i> <span>${scoreResult.rating}</span>`;
-        scoreElement.className = `readability-score ${scoreResult.className}`;
-
-        if (bestResult.excellentFound) {
-            showNotification('🎯 Excellent readability arrangement found!');
-        }
+    updateReadabilityUI(score) {
+        const el = document.getElementById('readabilityScore');
+        const iconName = score.rating === 'Excellent' ? 'check-circle'
+                       : score.rating === 'Good'      ? 'star'
+                       : 'exclamation-triangle';
+        el.innerHTML = `<i class="fas fa-${iconName}"></i> <span>${score.rating}</span>`;
+        el.className = `readability-score ${score.className}`;
     },
 
     applyWebsiteColors(palette) {
         if (palette.length < 3) return;
+        const [c0, c1, c2, c3] = palette;
 
-        // Apply colors to website mockup
-        const mockup = document.querySelector('.website-mockup');
-        const nav = document.querySelector('.mockup-nav');
-        const hero = document.querySelector('.mockup-hero');
-        const footer = document.querySelector('.mockup-footer');
+        const hero         = document.querySelector('.mockup-hero');
+        const nav          = document.querySelector('.mockup-nav');
+        const footer       = document.querySelector('.mockup-footer');
+        const buttons      = document.querySelectorAll('.mockup-btn');
         const featureCards = document.querySelectorAll('.feature-card');
-        const buttons = document.querySelectorAll('.mockup-btn');
+        const bgAnimation  = document.querySelector('.background-animation');
 
-        // Background gradient for hero section
         if (hero) {
-            hero.style.background = `linear-gradient(135deg, ${palette[0]}, ${palette[1]})`;
-            hero.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+            hero.style.background = `linear-gradient(135deg, ${c0}, ${c1})`;
+            hero.style.color = bestTextColor(c0);
         }
-
-        // Nav and footer background
         if (nav) {
-            nav.style.backgroundColor = palette[0];
-            nav.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+            nav.style.backgroundColor = c0;
+            nav.style.color = bestTextColor(c0);
         }
-
         if (footer) {
-            footer.style.backgroundColor = palette[0];
-            footer.style.color = getContrastRatio(palette[0], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
+            footer.style.backgroundColor = c0;
+            footer.style.color = bestTextColor(c0);
         }
-
-        // Buttons
-        buttons.forEach((btn, index) => {
-            if (index === 0 && palette[2]) {
-                btn.style.backgroundColor = palette[2];
-                btn.style.color = getContrastRatio(palette[2], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-            } else if (index === 1 && palette[3]) {
-                btn.style.backgroundColor = palette[3];
-                btn.style.color = getContrastRatio(palette[3], '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-            }
+        buttons.forEach((btn, i) => {
+            const color = i === 0 ? c2 : c3;
+            if (!color) return;
+            btn.style.backgroundColor = color;
+            btn.style.color = bestTextColor(color);
         });
-
-        // Feature cards
-        featureCards.forEach((card, index) => {
-            if (palette[index + 2]) {
-                const bgColor = palette[index + 2] + '20'; // Add opacity
-                card.style.backgroundColor = bgColor;
-                card.style.color = getContrastRatio(palette[index + 2], '#FFFFFF') > 4.5 ? '#000000' : '#FFFFFF';
-
-                // Icon color
-                const icon = card.querySelector('i');
-                if (icon) {
-                    icon.style.color = palette[index + 2];
-                }
-            }
+        featureCards.forEach((card, i) => {
+            const color = palette[i + 2];
+            if (!color) return;
+            card.style.backgroundColor = `${color}20`;
+            // Keep card text readable against near-transparent background
+            card.style.color = '#1d1d1f';
+            const icon = card.querySelector('i');
+            if (icon) icon.style.color = color;
         });
-        const allElements = document.querySelectorAll('.website-mockup, .mockup-nav, .mockup-hero, .mockup-footer, .feature-card, .mockup-btn');
-    allElements.forEach(el => {
-        el.style.transition = 'background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease';
-    });
-
-
-        // Update background animation with first two colors
-        const bgAnimation = document.querySelector('.background-animation');
         if (bgAnimation) {
-            bgAnimation.style.background = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2] || palette[0]}, ${palette[3] || palette[1]})`;
+            bgAnimation.style.background =
+                `linear-gradient(-45deg, ${c0}, ${c1}, ${c2 ?? c0}, ${c3 ?? c1})`;
         }
     },
 
-optimizeReadability() {
-    if (this.currentPalette.length === 0) {
-        showNotification('Please generate a palette first!');
-        return;
-    }
+    optimizeReadability() {
+        if (!this.currentPalette.length) {
+            showNotification('Generate a palette first.', 'error');
+            return;
+        }
+        const btn = document.getElementById('optimizeBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
 
-    const optimizeBtn = document.getElementById('optimizeBtn');
-    const originalText = optimizeBtn.innerHTML;
-
-    // Add loading state
-    optimizeBtn.classList.add('loading');
-    optimizeBtn.innerHTML = '<i class="fas fa-search"></i>';
-
-    showNotification('🔍 Finding optimal arrangement...');
-
-    setTimeout(() => {
-        const bestResult = this.findBestReadabilityArrangement(this.currentPalette);
-        this.shuffledPalette = [...bestResult.arrangement];
-        this.applyWebsiteColors(this.shuffledPalette);
-
-        const message = bestResult.excellentFound
-            ? '🎯 Found excellent readability arrangement!'
-            : `✨ Best arrangement found (${bestResult.score.rating})`;
-
-        showNotification(message);
-
-        // Update readability score
-        const scoreElement = document.getElementById('readabilityScore');
-        scoreElement.innerHTML = `<i class="fas fa-${bestResult.score.rating === 'Excellent' ? 'check-circle' : 'star'}"></i> <span>${bestResult.score.rating}</span>`;
-        scoreElement.className = `readability-score ${bestResult.score.className}`;
-
-        // Remove loading state
-        optimizeBtn.classList.remove('loading');
-        optimizeBtn.innerHTML = originalText;
-    }, 100);
-},
+        // Yield to browser so the loading state actually renders before the sync work runs
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const best = this.findBestReadabilityArrangement(this.currentPalette);
+                this.displayedArrangement = best.arrangement;
+                this.applyWebsiteColors(this.displayedArrangement);
+                this.updateReadabilityUI(best.score);
+                showNotification(
+                    best.score.rating === 'Excellent'
+                        ? 'Optimal arrangement applied.'
+                        : `Best found: ${best.score.rating}`
+                );
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 50);
+        });
+    },
 
     shuffleColors() {
-        this.shuffledPalette = shuffleArray(this.currentPalette);
-        this.applyWebsiteColors(this.shuffledPalette);
-        showNotification('Colors shuffled! Check the new arrangement.');
+        if (!this.currentPalette.length) return;
+        this.displayedArrangement = shuffleArray(this.currentPalette);
+        this.applyWebsiteColors(this.displayedArrangement);
+        this.updateReadabilityUI(this.calculateReadabilityScore(this.displayedArrangement));
+        showNotification('Preview arrangement shuffled.');
     },
 
     displayPalette(palette) {
         const grid = document.getElementById('paletteGrid');
-
         grid.innerHTML = '';
         grid.classList.add('animate');
 
-        palette.forEach((color, index) => {
+        palette.forEach(color => {
+            const rgb = hexToRgb(color);
+            const [h, s, l] = ColorTheory.hexToHsl(color);
+            const contrastRatio = getContrastRatio(color, '#FFFFFF');
+
             const swatch = document.createElement('div');
             swatch.className = 'color-swatch';
             swatch.style.backgroundColor = color;
-
-            const rgb = hexToRgb(color);
-            const contrastRatio = getContrastRatio(color, '#FFFFFF');
-            const hasGoodContrast = contrastRatio >= 4.5;
+            // FIX: swatches are interactive but weren't keyboard-accessible
+            swatch.setAttribute('role', 'button');
+            swatch.setAttribute('tabindex', '0');
+            swatch.setAttribute('aria-label', `Copy color ${color.toUpperCase()}`);
 
             swatch.innerHTML = `
                 <div class="color-info">
                     <div class="hex-code">${color.toUpperCase()}</div>
-                    <div class="rgb-code">RGB: ${rgb.r}, ${rgb.g}, ${rgb.b}</div>
-                    ${!hasGoodContrast ? '<div class="contrast-warning">Low contrast</div>' : ''}
+                    <div class="rgb-code">RGB ${rgb.r}, ${rgb.g}, ${rgb.b}</div>
+                    <div class="rgb-code">HSL ${Math.round(h)}° ${Math.round(s)}% ${Math.round(l)}%</div>
+                    ${contrastRatio < 4.5 ? '<div class="contrast-warning">Low contrast</div>' : ''}
                 </div>
+                <div class="swatch-copied-overlay" aria-hidden="true">✓</div>
             `;
 
-            swatch.addEventListener('click', () => {
-                navigator.clipboard.writeText(color.toUpperCase()).then(() => {
-                    showNotification(`${color.toUpperCase()} copied to clipboard!`);
-                });
+            const copyAction = async () => {
+                try {
+                    await copyToClipboard(color.toUpperCase());
+                    swatch.classList.add('copied');
+                    setTimeout(() => swatch.classList.remove('copied'), 1200);
+                    showNotification(`${color.toUpperCase()} copied.`);
+                } catch {
+                    showNotification('Copy failed — try manually.', 'error');
+                }
+            };
+
+            swatch.addEventListener('click', copyAction);
+            swatch.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyAction(); }
             });
 
             grid.appendChild(swatch);
         });
 
-        setTimeout(() => {
-            grid.classList.remove('animate');
-        }, 500);
+        setTimeout(() => grid.classList.remove('animate'), 500);
     },
 
-    copyAllColors() {
-        if (this.currentPalette.length === 0) {
-            showNotification('No colors to copy!');
+    async copyAllColors() {
+        if (!this.currentPalette.length) {
+            showNotification('No palette to copy.', 'error');
             return;
         }
+        try {
+            await copyToClipboard(this.currentPalette.map(c => c.toUpperCase()).join('\n'));
+            showNotification('All hex codes copied.');
+        } catch {
+            showNotification('Copy failed.', 'error');
+        }
+    },
 
-        const colorsText = this.currentPalette.map(color => color.toUpperCase()).join('\n');
-        navigator.clipboard.writeText(colorsText).then(() => {
-            showNotification('All colors copied to clipboard!');
-        });
+    // NEW: Export as CSS custom properties — useful for developers
+    async copyCSSVariables() {
+        if (!this.currentPalette.length) {
+            showNotification('Generate a palette first.', 'error');
+            return;
+        }
+        const label = this.currentAlgorithm.toLowerCase();
+        const vars = this.currentPalette
+            .map((c, i) => `  --${label}-${i + 1}: ${c.toUpperCase()};`)
+            .join('\n');
+        const css = `:root {\n${vars}\n}`;
+        try {
+            await copyToClipboard(css);
+            showNotification('CSS variables copied.');
+        } catch {
+            showNotification('Copy failed.', 'error');
+        }
+    },
+
+    // NEW: Share current palette via URL copy
+    async sharePalette() {
+        const url = window.location.href;
+        try {
+            await copyToClipboard(url);
+            showNotification('Share URL copied to clipboard!');
+        } catch {
+            showNotification('Copy failed.', 'error');
+        }
     },
 
     exportAsPNG() {
         const canvas = document.getElementById('exportCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 1000;
-        canvas.height = 500;
+        const W = 1200, H = 600;
+        canvas.width = W; canvas.height = H;
 
-        // Draw gradient background
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, this.currentPalette[0]);
-        gradient.addColorStop(1, this.currentPalette[1] || this.currentPalette[0]);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, this.currentPalette[0]);
+        grad.addColorStop(1, this.currentPalette[1] ?? this.currentPalette[0]);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
 
-        // Draw palette swatches
-        const swatchWidth = 100;
-        const swatchHeight = 100;
-        const spacing = 20;
-        const startX = (canvas.width - (this.currentPalette.length * (swatchWidth + spacing) - spacing)) / 2;
-        const startY = 150;
+        const SW = 140, SH = 140, GAP = 24;
+        const total = this.currentPalette.length;
+        const startX = (W - (total * (SW + GAP) - GAP)) / 2;
+        const startY = (H - SH) / 2 - 20;
 
-        this.currentPalette.forEach((color, index) => {
-            const x = startX + index * (swatchWidth + spacing);
-
-            // Draw swatch
+        this.currentPalette.forEach((color, i) => {
+            const x = startX + i * (SW + GAP);
             ctx.fillStyle = color;
-            ctx.fillRect(x, startY, swatchWidth, swatchHeight);
-
-            // Add border
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            if (ctx.roundRect) {
+                ctx.beginPath();
+                ctx.roundRect(x, startY, SW, SH, 12);
+                ctx.fill();
+            } else {
+                ctx.fillRect(x, startY, SW, SH);
+            }
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
             ctx.lineWidth = 2;
-            ctx.strokeRect(x, startY, swatchWidth, swatchHeight);
+            ctx.strokeRect(x, startY, SW, SH);
 
-            // Add hex code
-            ctx.fillStyle = getContrastRatio(color, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = bestTextColor(color);
+            ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(color.toUpperCase(), x + swatchWidth/2, startY + swatchHeight + 30);
+            ctx.fillText(color.toUpperCase(), x + SW / 2, startY + SH + 28);
         });
 
-        // Add title
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, sans-serif';
+        const label = this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1);
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.font = 'bold 38px -apple-system, BlinkMacSystemFont, Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(`${this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1)} Palette`, canvas.width / 2, 100);
+        ctx.fillText(`${label} Palette`, W / 2, startY - 30);
 
-        // Add footer
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.font = '16px Arial';
-        ctx.fillText('Generated with Hhhpraise Color Studio', canvas.width / 2, canvas.height - 30);
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '15px Arial';
+        ctx.fillText('Smart Color Palette · hhhpraise.github.io', W / 2, H - 24);
 
-        // Download
         const link = document.createElement('a');
-        link.download = `chroma-glass-${this.currentAlgorithm}-palette.png`;
+        link.download = `palette-${this.currentAlgorithm}.png`;
         link.href = canvas.toDataURL();
         link.click();
-
-        showNotification('Palette exported as PNG!');
+        showNotification('PNG exported.');
     },
-    bindKeyboardShortcuts() {
-    document.addEventListener('keydown', (e) => {
-        // Space for random color
-        if (e.code === 'Space' && !e.target.matches('input, textarea')) {
-            e.preventDefault();
-            document.getElementById('randomBtn').click();
-        }
-
-        // Enter to generate palette
-        if (e.code === 'Enter' && document.activeElement === document.getElementById('hexInput')) {
-            e.preventDefault();
-            this.generatePalette();
-        }
-
-        // Number keys 1-5 for harmony modes
-        if (e.code >= 'Digit1' && e.code <= 'Digit5') {
-            const index = parseInt(e.code.slice(-1)) - 1;
-            const harmonyBtns = document.querySelectorAll('.harmony-btn');
-            if (harmonyBtns[index]) {
-                harmonyBtns[index].click();
-            }
-        }
-    });
-},
 
     exportAsSVG() {
-        const svgWidth = 1000;
-        const svgHeight = 500;
-        const swatchWidth = 100;
-        const swatchHeight = 100;
-        const spacing = 20;
-        const startX = (svgWidth - (this.currentPalette.length * (swatchWidth + spacing) - spacing)) / 2;
-        const startY = 150;
+        const W = 1200, H = 600;
+        const SW = 140, SH = 140, GAP = 24;
+        const total = this.currentPalette.length;
+        const startX = (W - (total * (SW + GAP) - GAP)) / 2;
+        const startY = (H - SH) / 2 - 20;
+        const label = this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1);
 
-        let svgContent = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+        let svg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${this.currentPalette[0]}"/>
+      <stop offset="100%" stop-color="${this.currentPalette[1] ?? this.currentPalette[0]}"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <text x="${W / 2}" y="${startY - 30}" text-anchor="middle" font-family="-apple-system,Arial" font-size="38" font-weight="bold" fill="rgba(255,255,255,0.92)">${label} Palette</text>\n`;
 
-        // Background gradient
-        svgContent += `<defs>
-            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="${this.currentPalette[0]}" />
-                <stop offset="100%" stop-color="${this.currentPalette[1] || this.currentPalette[0]}" />
-            </linearGradient>
-        </defs>`;
-
-        svgContent += `<rect width="100%" height="100%" fill="url(#bgGradient)" />`;
-
-        // Swatches
-        this.currentPalette.forEach((color, index) => {
-            const x = startX + index * (swatchWidth + spacing);
-
-            svgContent += `<rect x="${x}" y="${startY}" width="${swatchWidth}" height="${swatchHeight}" fill="${color}" stroke="rgba(255,255,255,0.3)" stroke-width="2" />`;
-
-            const textColor = getContrastRatio(color, '#FFFFFF') > 4.5 ? '#FFFFFF' : '#000000';
-            svgContent += `<text x="${x + swatchWidth/2}" y="${startY + swatchHeight + 30}" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="${textColor}">${color.toUpperCase()}</text>`;
+        this.currentPalette.forEach((color, i) => {
+            const x = startX + i * (SW + GAP);
+            const textColor = bestTextColor(color);
+            svg += `  <rect x="${x}" y="${startY}" width="${SW}" height="${SH}" rx="12" fill="${color}" stroke-opacity="0.3" stroke="#ffffff" stroke-width="2"/>
+  <text x="${x + SW / 2}" y="${startY + SH + 28}" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="${textColor}">${color.toUpperCase()}</text>\n`;
         });
 
-        // Title
-        svgContent += `<text x="${svgWidth/2}" y="100" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="36" font-weight="bold" fill="rgba(255,255,255,0.9)">${this.currentAlgorithm.charAt(0).toUpperCase() + this.currentAlgorithm.slice(1)} Palette</text>`;
+        svg += `  <text x="${W / 2}" y="${H - 24}" text-anchor="middle" font-family="Arial" font-size="15" fill-opacity="0.5" fill="#ffffff">Smart Color Palette · hhhpraise.github.io</text>
+</svg>`;
 
-        // Footer
-        svgContent += `<text x="${svgWidth/2}" y="${svgHeight - 30}" text-anchor="middle" font-family="Arial" font-size="16" fill="rgba(255,255,255,0.6)">Generated with Hhhpraise - Color Studio</text>`;
-
-        svgContent += '</svg>';
-
-        const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
         const link = document.createElement('a');
-        link.download = `chroma-glass-${this.currentAlgorithm}-palette.svg`;
+        link.download = `palette-${this.currentAlgorithm}.svg`;
         link.href = URL.createObjectURL(blob);
         link.click();
-
-        showNotification('Palette exported as SVG!');
-    }
+        showNotification('SVG exported.');
+    },
 };
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    app.init();
-});
+document.addEventListener('DOMContentLoaded', () => app.init());
 
-// Add smooth scroll behavior
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+        document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
     });
 });

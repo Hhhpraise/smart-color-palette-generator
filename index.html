@@ -3,181 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 Smart Color Palette - color studio</title>
+    <title>Chromatic — Color Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style-additions.css">
 </head>
 <body>
+
+    <!-- Ambient color orb — JS updates background with palette gradient -->
     <div class="background-animation"></div>
 
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-palette"></i>
-                <h1>Smart palette</h1>
-                <span class="subtitle">Color Studio</span>
+    <div class="app-shell">
+
+        <!-- ── Header ──────────────────────────────────────────────── -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-palette"></i></div>
+                <span class="brand-name">chromatic</span>
+                <span class="brand-tag">Studio</span>
             </div>
-            <p class="tagline">Designed to visualize your color harmony...</p>
+            <div class="header-hint">
+                <kbd>Space</kbd> random &middot; <kbd>1–5</kbd> harmony mode
+            </div>
         </header>
 
-        <main class="main-content">
-            <!-- Color Input Section -->
-            <section class="glass-card control-panel">
-                <h2><i class="fas fa-sliders-h"></i> Color Control</h2>
-                <div class="input-section">
-                    <div class="color-input-group">
-                        <label for="colorPicker">Base Color</label>
-                        <div class="input-with-preview">
+        <!-- ── App Layout ──────────────────────────────────────────── -->
+        <div class="app-layout">
+
+            <!-- ── Sidebar ── -->
+            <aside class="app-sidebar">
+
+                <!-- Color Input Panel -->
+                <div class="panel" id="controlPanel">
+                    <span class="panel-label">Base Color</span>
+                    <div class="color-input-row">
+                        <div class="picker-wrap">
                             <input type="color" id="colorPicker" value="#FDDCD7">
                             <div class="color-preview" id="colorPreview"></div>
                         </div>
-                    </div>
-
-                    <div class="hex-input-group">
-                        <label for="hexInput">Hex Code</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-hashtag"></i>
-                            <input type="text" id="hexInput" placeholder="#FDDCD7" value="#FDDCD7" maxlength="7">
+                        <div class="hex-wrap">
+                            <div class="input-with-icon">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="text" id="hexInput" placeholder="FDDCD7" value="#FDDCD7" maxlength="7" autocomplete="off" spellcheck="false">
+                            </div>
                         </div>
                     </div>
-
                     <div class="action-buttons">
                         <button class="btn btn-generate" id="generateBtn">
-                            <i class="fas fa-magic"></i> Generate Palette
+                            <i class="fas fa-magic"></i>
+                            <span>Generate Palette</span>
                         </button>
-                        <button class="btn btn-random" id="randomBtn">
-                            <i class="fas fa-random"></i> Random
+                        <button class="btn btn-random" id="randomBtn" title="Random color (Space)">
+                            <i class="fas fa-random"></i>
                         </button>
                     </div>
                 </div>
-            </section>
 
-            <!-- Harmony Selection -->
-            <section class="glass-card harmony-panel">
-                <h2><i class="fas fa-compress-arrows-alt"></i> Color Harmony</h2>
-                <div class="harmony-buttons">
-                    <button class="harmony-btn active" data-algorithm="monochromatic">
-                        <i class="fas fa-circle"></i> Monochromatic
-                    </button>
-                    <button class="harmony-btn" data-algorithm="complementary">
-                        <i class="fas fa-exchange-alt"></i> Complementary
-                    </button>
-                    <button class="harmony-btn" data-algorithm="analogous">
-                        <i class="fas fa-arrows-alt-h"></i> Analogous
-                    </button>
-                    <button class="harmony-btn" data-algorithm="triadic">
-                        <i class="fas fa-braille"></i> Triadic
-                    </button>
-                    <button class="harmony-btn" data-algorithm="splitComplementary">
-                        <i class="fas fa-code-branch"></i> Split-Complementary
-                    </button>
-                </div>
-            </section>
-
-            <!-- Real-time Website Preview -->
-            <section class="glass-card website-preview">
-                <div class="preview-header">
-                    <h2><i class="fas fa-desktop"></i> Live Preview</h2>
-                    <div class="readability-score" id="readabilityScore">
-                        <i class="fas fa-check-circle"></i> <span>Excellent</span>
+                <!-- Harmony Panel -->
+                <div class="panel" id="harmonyPanel">
+                    <span class="panel-label">Color Harmony</span>
+                    <div class="harmony-buttons">
+                        <button class="harmony-btn active" data-algorithm="monochromatic">
+                            <span class="hbtn-dot"></span>
+                            <span class="hbtn-name">Monochromatic</span>
+                            <kbd class="hbtn-key">1</kbd>
+                        </button>
+                        <button class="harmony-btn" data-algorithm="complementary">
+                            <span class="hbtn-dot"></span>
+                            <span class="hbtn-name">Complementary</span>
+                            <kbd class="hbtn-key">2</kbd>
+                        </button>
+                        <button class="harmony-btn" data-algorithm="analogous">
+                            <span class="hbtn-dot"></span>
+                            <span class="hbtn-name">Analogous</span>
+                            <kbd class="hbtn-key">3</kbd>
+                        </button>
+                        <button class="harmony-btn" data-algorithm="triadic">
+                            <span class="hbtn-dot"></span>
+                            <span class="hbtn-name">Triadic</span>
+                            <kbd class="hbtn-key">4</kbd>
+                        </button>
+                        <button class="harmony-btn" data-algorithm="splitComplementary">
+                            <span class="hbtn-dot"></span>
+                            <span class="hbtn-name">Split-Complementary</span>
+                            <kbd class="hbtn-key">5</kbd>
+                        </button>
                     </div>
                 </div>
 
-                <div class="preview-container">
-                    <!-- Dynamic website elements that change with palette -->
-                    <div class="website-mockup">
-                        <nav class="mockup-nav">
-                            <div class="nav-brand">YourBrand</div>
-                            <div class="nav-links">
-                                <a href="#" class="nav-link">Home</a>
-                                <a href="#" class="nav-link">About</a>
-                                <a href="#" class="nav-link">Services</a>
-                                <a href="#" class="nav-link">Contact</a>
-                            </div>
-                        </nav>
-
-                        <div class="mockup-hero">
-                            <h3 class="hero-title">Welcome to Your Website</h3>
-                            <p class="hero-text">This shows how your color palette looks in a real design. All elements update dynamically.</p>
-                            <div class="hero-actions">
-                                <button class="mockup-btn primary-btn">Primary Action</button>
-                                <button class="mockup-btn secondary-btn">Learn More</button>
-                            </div>
-                        </div>
-
-                        <div class="mockup-features">
-                            <div class="feature-card">
-                                <i class="fas fa-bolt"></i>
-                                <h4>Fast & Reliable</h4>
-                                <p>Experience lightning-fast performance</p>
-                            </div>
-                            <div class="feature-card">
-                                <i class="fas fa-shield-alt"></i>
-                                <h4>Secure</h4>
-                                <p>Enterprise-grade security</p>
-                            </div>
-                            <div class="feature-card">
-                                <i class="fas fa-mobile-alt"></i>
-                                <h4>Responsive</h4>
-                                <p>Perfect on all devices</p>
-                            </div>
-                        </div>
-
-                        <footer class="mockup-footer">
-                            <p>© 2024 YourBrand. All rights reserved.</p>
-                            <div class="footer-links">
-                                <a href="#">Privacy</a>
-                                <a href="#">Terms</a>
-                                <a href="#">Contact</a>
-                            </div>
-                        </footer>
+                <!-- Accessibility Panel -->
+                <div class="panel" id="accessPanel">
+                    <span class="panel-label">Accessibility</span>
+                    <div class="readability-score score-excellent" id="readabilityScore">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Excellent</span>
+                    </div>
+                    <div class="access-actions">
+                        <button class="btn btn-optimize" id="optimizeBtn">
+                            <i class="fas fa-search"></i>
+                            <span>Optimize</span>
+                        </button>
+                        <button class="btn btn-shuffle" id="shuffleColorsBtn">
+                            <i class="fas fa-random"></i>
+                            <span>Shuffle</span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="preview-controls">
-                    <button class="btn btn-optimize" id="optimizeBtn">
-                        <i class="fas fa-search"></i> Find Best Readability
-                    </button>
-                    <button class="btn btn-shuffle" id="shuffleColorsBtn">
-                        <i class="fas fa-random"></i> Shuffle Layout
-                    </button>
-                </div>
-            </section>
+            </aside>
 
-            <!-- Color Palette Display -->
-            <section class="glass-card palette-section">
-                <div class="palette-header">
-                    <h2><i class="fas fa-swatchbook"></i> Color Palette</h2>
-                    <span class="palette-name" id="paletteName">Monochromatic</span>
+            <!-- ── Main Canvas ── -->
+            <main class="app-main">
+
+                <!-- Palette Panel -->
+                <div class="panel panel-palette">
+                    <div class="panel-row">
+                        <span class="panel-label" style="margin-bottom:0">Palette</span>
+                        <span class="palette-name" id="paletteName">Monochromatic</span>
+                    </div>
+                    <div class="palette-grid" id="paletteGrid">
+                        <!-- Color strips injected by JS -->
+                    </div>
+                    <div class="palette-actions">
+                        <button class="btn btn-export" id="exportPNG">
+                            <i class="fas fa-download"></i><span>PNG</span>
+                        </button>
+                        <button class="btn btn-export" id="exportSVG">
+                            <i class="fas fa-file-export"></i><span>SVG</span>
+                        </button>
+                        <button class="btn btn-copy" id="copyAllBtn">
+                            <i class="fas fa-copy"></i><span>Copy All</span>
+                        </button>
+                        <button class="btn btn-css" id="copyCSSBtn">
+                            <i class="fas fa-code"></i><span>CSS Vars</span>
+                        </button>
+                        <button class="btn btn-share" id="shareBtn">
+                            <i class="fas fa-link"></i><span>Share</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="palette-grid" id="paletteGrid">
-                    <!-- Colors will be dynamically inserted here -->
+                <!-- Live Preview Panel -->
+                <div class="panel panel-preview">
+                    <div class="panel-row">
+                        <span class="panel-label" style="margin-bottom:0">
+                            <i class="fas fa-desktop" style="margin-right:6px;opacity:.6"></i>Live Preview
+                        </span>
+                    </div>
+
+                    <!-- Fake browser chrome -->
+                    <div class="browser-chrome">
+                        <div class="browser-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="browser-url">yourwebsite.com</div>
+                    </div>
+
+                    <div class="preview-container">
+                        <div class="website-mockup">
+                            <nav class="mockup-nav">
+                                <div class="nav-brand">YourBrand</div>
+                                <div class="nav-links">
+                                    <a href="#" class="nav-link">Home</a>
+                                    <a href="#" class="nav-link">About</a>
+                                    <a href="#" class="nav-link">Services</a>
+                                    <a href="#" class="nav-link">Contact</a>
+                                </div>
+                            </nav>
+
+                            <div class="mockup-hero">
+                                <h3 class="hero-title">Welcome to Your Website</h3>
+                                <p class="hero-text">This shows how your color palette looks in a real design. All elements update dynamically.</p>
+                                <div class="hero-actions">
+                                    <button class="mockup-btn primary-btn">Primary Action</button>
+                                    <button class="mockup-btn secondary-btn">Learn More</button>
+                                </div>
+                            </div>
+
+                            <div class="mockup-features">
+                                <div class="feature-card">
+                                    <i class="fas fa-bolt"></i>
+                                    <h4>Fast & Reliable</h4>
+                                    <p>Lightning-fast performance</p>
+                                </div>
+                                <div class="feature-card">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <h4>Secure</h4>
+                                    <p>Enterprise-grade security</p>
+                                </div>
+                                <div class="feature-card">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <h4>Responsive</h4>
+                                    <p>Perfect on all devices</p>
+                                </div>
+                            </div>
+
+                            <footer class="mockup-footer">
+                                <p>© 2024 YourBrand. All rights reserved.</p>
+                                <div class="footer-links">
+                                    <a href="#">Privacy</a>
+                                    <a href="#">Terms</a>
+                                    <a href="#">Contact</a>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="palette-actions">
-                    <button class="btn btn-export" id="exportPNG">
-                        <i class="fas fa-download"></i> Export PNG
-                    </button>
-                    <button class="btn btn-export" id="exportSVG">
-                        <i class="fas fa-file-export"></i> Export SVG
-                    </button>
-                    <button class="btn btn-copy" id="copyAllBtn">
-                        <i class="fas fa-copy"></i> Copy All Colors
-                    </button>
-                </div>
-            </section>
-        </main>
+            </main>
+        </div>
 
-        <footer class="footer">
-            <div class="footer-content">
+        <!-- ── App Footer ──────────────────────────────────────────── -->
+        <footer class="app-footer">
+            <div class="footer-inner">
                 <div class="footer-brand">
                     <i class="fas fa-palette"></i>
-                    <h3>Smart Palette</h3>
-                    <p>Hhpraise-inspired color design tool</p>
+                    <span>Smart Palette</span>
+                    <span class="footer-divider">·</span>
+                    <span class="footer-sub">by Hhhpraise</span>
                 </div>
-
-                <div class="footer-links">
+                <div class="footer-links-row">
                     <a href="https://hhhpraise.github.io/portfolio/" target="_blank" class="footer-link">
                         <i class="fas fa-portrait"></i> Portfolio
                     </a>
@@ -188,22 +236,19 @@
                         <i class="fab fa-github"></i> GitHub
                     </a>
                 </div>
-
-                <div class="footer-info">
-                    <p>Made with <i class="fas fa-heart" style="color: #ff4757;"></i> from Hhhpraise</p>
-                </div>
             </div>
         </footer>
+
     </div>
 
-    <!-- Notification Toast -->
+    <!-- Toast notification -->
     <div class="notification-toast" id="notificationToast">
         <i class="fas fa-check-circle"></i>
-        <span class="toast-message">Color copied to clipboard!</span>
+        <span class="toast-message">Copied!</span>
     </div>
 
-    <!-- Hidden canvas for export -->
-    <canvas id="exportCanvas" style="display: none;"></canvas>
+    <!-- Export canvas (hidden) -->
+    <canvas id="exportCanvas" style="display:none"></canvas>
 
     <script src="script.js"></script>
 </body>
