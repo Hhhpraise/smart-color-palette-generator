@@ -3,7 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromatic — Color Studio</title>
+
+    <!-- Primary SEO -->
+    <title>Smart Palette Generator — Chromatic Color Studio | Free WCAG-Compliant Color Schemes</title>
+    <meta name="description" content="Chromatic Color Studio is a free smart palette generator that creates WCAG-accessible, harmonious color schemes using 5 color theory algorithms. Live preview, color blindness simulation, bulk generate, compare, and export as PNG/SVG/PDF/CSS.">
+    <meta name="keywords" content="smart palette, smart palette generator, chromatic color studio, color palette generator, color scheme generator, WCAG color checker, color contrast checker, color blindness simulator, hex color palette, CSS color variables, tailwind color config, complementary colors, analogous colors, triadic colors, monochromatic colors, split-complementary">
+    <meta name="author" content="Hhhpraise">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://hhhpraise.github.io/smart-color-palette-generator/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hhhpraise.github.io/smart-color-palette-generator/">
+    <meta property="og:title" content="Smart Palette Generator — Chromatic Color Studio">
+    <meta property="og:description" content="Free WCAG-compliant color palette generator with live preview, color blindness simulation, 24 curated palettes, and multi-format export. Create beautiful, accessible color schemes instantly.">
+    <meta property="og:image" content="https://hhhpraise.github.io/smart-color-palette-generator/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Chromatic Color Studio — Smart Palette Generator interface showing a color palette">
+    <meta property="og:site_name" content="Chromatic Color Studio">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://hhhpraise.github.io/smart-color-palette-generator/">
+    <meta name="twitter:title" content="Smart Palette Generator — Chromatic Color Studio">
+    <meta name="twitter:description" content="Free WCAG-compliant color palette generator with live preview, color blindness simulation, and multi-format export.">
+    <meta name="twitter:image" content="https://hhhpraise.github.io/smart-color-palette-generator/og-image.png">
+    <meta name="twitter:creator" content="@hhhpraise">
+
+    <!-- Fonts & Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,6 +41,44 @@
     <link rel="stylesheet" href="style-additions.css">
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chromatic Color Studio — Smart Palette Generator",
+      "alternateName": ["Smart Palette", "Chromatic Color Studio", "Smart Palette Generator"],
+      "url": "https://hhhpraise.github.io/smart-color-palette-generator/",
+      "description": "Free WCAG-compliant smart color palette generator with 5 harmony algorithms, live preview, color blindness simulation, 24 curated palettes, bulk generation, and multi-format export.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Hhhpraise",
+        "url": "https://hhhpraise.github.io/portfolio/"
+      },
+      "browserRequirements": "Requires JavaScript",
+      "featureList": [
+        "5 color theory algorithms (complementary, analogous, triadic, monochromatic, split-complementary)",
+        "WCAG 2.1 contrast ratio checker with AAA/AA/Large Text/Fail ratings",
+        "Color blindness simulation (protanopia, deuteranopia, tritanopia)",
+        "24 curated color palettes",
+        "Bulk generate 12 variations from one base color",
+        "Side-by-side palette compare mode with contrast grid",
+        "Live website mockup preview",
+        "Export as PNG, SVG, PDF, Tailwind config, CSS variables",
+        "Image color extraction tool",
+        "Gradient builder tool",
+        "Dark and light themes"
+      ]
+    }
+    </script>
 </head>
 <body>
 
@@ -24,9 +91,11 @@
         <header class="app-header">
             <div class="brand">
                 <div class="brand-icon"><i class="fas fa-palette"></i></div>
-                <span class="brand-name">chromatic</span>
+                <h1 class="brand-name">chromatic</h1>
                 <span class="brand-tag">Studio</span>
             </div>
+            <!-- Hidden SEO heading — visible to search engines, not users -->
+            <span class="sr-only">Smart Palette Generator — Free WCAG-Compliant Color Scheme Tool</span>
             <div class="header-hint">
                 <kbd>Space</kbd> random &middot; <kbd>1–5</kbd> harmony
             </div>
@@ -389,9 +458,9 @@
             <div class="footer-inner">
                 <div class="footer-brand">
                     <i class="fas fa-palette"></i>
-                    <span>Smart Palette</span>
+                    <span>Chromatic Color Studio</span>
                     <span class="footer-divider">·</span>
-                    <span class="footer-sub">by Hhhpraise</span>
+                    <span class="footer-sub">Smart Palette Generator by Hhhpraise</span>
                 </div>
                 <div class="footer-links-row">
                     <a href="https://hhhpraise.github.io/portfolio/" target="_blank" class="footer-link">
