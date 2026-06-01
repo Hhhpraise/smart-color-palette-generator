@@ -3,8 +3,8 @@
 window.Chromatic = window.Chromatic || {};
 const C = window.Chromatic;
 
-// ─── Color Blindness Simulation (Brettel-Vienot-Mollon method) ────────────
-// RGB → LMS → deficiency transform → RGB
+// ─── Color Blindness Simulation (Machado 2009 / Brettel-Vienot-Mollon) ──────
+// Uses LMS-space projection matrices to simulate dichromatic vision.
 
 function rgbToLinear(r, g, b) {
     return [r, g, b].map(c => {
@@ -14,23 +14,36 @@ function rgbToLinear(r, g, b) {
 }
 
 function linearToRgb(l) {
-    return Math.round((l <= 0.0031308 ? l * 12.92 : 1.055 * l ** (1 / 2.4) - 0.055) * 255);
+    const v = l <= 0.0031308 ? l * 12.92 : 1.055 * l ** (1 / 2.4) - 0.055;
+    return Math.round(v * 255);
 }
 
-// RGB → LMS (using Hunt-Pointer-Estevez transform)
+// Linear RGB → LMS (Hunt-Pointer-Estevez)
+const RGB2LMS = [
+    [0.31399022, 0.63951294, 0.04649755],
+    [0.15537241, 0.75789446, 0.08670142],
+    [0.01775239, 0.10944209, 0.87256922],
+];
+
+// LMS → Linear RGB
+const LMS2RGB = [
+    [ 5.47221206, -4.6419601,   0.16963708],
+    [-1.1252419,   2.29317098, -0.1678952 ],
+    [ 0.02980165, -0.19318073,  1.16364789],
+];
+
 function rgbToLms(r, g, b) {
     const lin = rgbToLinear(r, g, b);
-    const l = lin[0] * 0.31399022 + lin[1] * 0.63951294 + lin[2] * 0.04649755;
-    const m = lin[0] * 0.15537241 + lin[1] * 0.75789446 + lin[2] * 0.08670142;
-    const s = lin[0] * 0.01775239 + lin[1] * 0.10944209 + lin[2] * 0.87256922;
+    const l = lin[0] * RGB2LMS[0][0] + lin[1] * RGB2LMS[0][1] + lin[2] * RGB2LMS[0][2];
+    const m = lin[0] * RGB2LMS[1][0] + lin[1] * RGB2LMS[1][1] + lin[2] * RGB2LMS[1][2];
+    const s = lin[0] * RGB2LMS[2][0] + lin[1] * RGB2LMS[2][1] + lin[2] * RGB2LMS[2][2];
     return [l, m, s];
 }
 
-// LMS → RGB (inverse)
 function lmsToRgb(l, m, s) {
-    const r = l *  5.47221206 + m * -4.6419601  + s *  0.16963708;
-    const g = l * -1.1252419  + m *  2.29317098 + s * -0.1678952;
-    const b = l *  0.02980165 + m * -0.19318073 + s *  1.16364789;
+    const r = l * LMS2RGB[0][0] + m * LMS2RGB[0][1] + s * LMS2RGB[0][2];
+    const g = l * LMS2RGB[1][0] + m * LMS2RGB[1][1] + s * LMS2RGB[1][2];
+    const b = l * LMS2RGB[2][0] + m * LMS2RGB[2][1] + s * LMS2RGB[2][2];
     return [
         Math.max(0, Math.min(255, linearToRgb(r))),
         Math.max(0, Math.min(255, linearToRgb(g))),
@@ -47,38 +60,37 @@ function rgbArrToHex([r, g, b]) {
     return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
-// Deficiency matrices (simplified Brettel approach on LMS space)
+// Projection matrices for dichromatic vision (Viénot-Brettel-Mollon 1999).
+// These map the LMS response of a normal trichromat onto the dichromat's
+// reduced-colour plane (the plane of constant L+M+S).
 const DEFICIENCY_MATRICES = {
-    protanopia: {
-        // Red-green deficiency: L channel is shifted
-        apply: function(l, m, s) {
-            const newL = m * 2.02344 - s * 0.02344;
-            const newM = m;
-            return [newL, newM, s];
-        }
-    },
-    deuteranopia: {
-        // Green deficiency: M channel is shifted
-        apply: function(l, m, s) {
-            const newM = l * 0.49421 + s * 0.50579;
-            return [l, newM, s];
-        }
-    },
-    tritanopia: {
-        // Blue-yellow deficiency: S channel is shifted
-        apply: function(l, m, s) {
-            const newS = l * 0.01611 + m * 0.98389;
-            return [l, m, newS];
-        }
-    }
+    protanopia: [
+        [0.0,      2.02344, -0.02344],
+        [0.0,      1.0,      0.0     ],
+        [0.0,      0.0,      1.0     ],
+    ],
+    deuteranopia: [
+        [1.0,      0.0,      0.0     ],
+        [0.494207, 0.0,      0.505793],
+        [0.0,      0.0,      1.0     ],
+    ],
+    tritanopia: [
+        [1.0,      0.0,      0.0     ],
+        [0.0,      1.0,      0.0     ],
+        [-0.395913, 0.801109, 0.0     ],
+    ],
 };
 
 function simulateColorBlindness(hex, type) {
     const rgb = hexToRgbArr(hex);
     const lms = rgbToLms(rgb[0], rgb[1], rgb[2]);
-    const matrix = DEFICIENCY_MATRICES[type];
-    if (!matrix) return hex;
-    const [newL, newM, newS] = matrix.apply(lms[0], lms[1], lms[2]);
+    const M = DEFICIENCY_MATRICES[type];
+    if (!M) return hex;
+
+    const newL = lms[0] * M[0][0] + lms[1] * M[0][1] + lms[2] * M[0][2];
+    const newM = lms[0] * M[1][0] + lms[1] * M[1][1] + lms[2] * M[1][2];
+    const newS = lms[0] * M[2][0] + lms[1] * M[2][1] + lms[2] * M[2][2];
+
     const newRgb = lmsToRgb(newL, newM, newS);
     return rgbArrToHex(newRgb);
 }
@@ -92,13 +104,21 @@ function applyColorBlindSim(type) {
     const activeBtn = document.querySelector(`.cvd-btn[data-cvd="${type}"]`);
     if (activeBtn) activeBtn.classList.add('active');
 
-    if (type === 'normal') {
-        app.applyWebsiteColors(app.displayedArrangement);
-        return;
-    }
+    app.currentCVD = type === 'normal' ? null : type;
 
-    const simulated = app.displayedArrangement.map(c => simulateColorBlindness(c, type));
-    app.applyWebsiteColors(simulated);
+    // Always pass the raw displayed colors — applyWebsiteColors handles CVD via currentCVD flag
+    const raw = app._rawPreviewColors && app._rawPreviewColors.length
+        ? [...app._rawPreviewColors]
+        : [...app.displayedArrangement];
+    app.applyWebsiteColors(raw);
+
+    if (type === 'normal') {
+        app.updateReadabilityUI(app.calculateReadabilityScore(app.displayedArrangement));
+    } else {
+        const simulated = raw.map(c => simulateColorBlindness(c, type));
+        app.updateReadabilityUI(app.calculateReadabilityScore(simulated));
+        C.showNotification(`Simulating ${activeBtn ? activeBtn.textContent : type}.`);
+    }
 }
 
 // Attach

@@ -117,7 +117,9 @@
 
                 <!-- Accessibility Panel -->
                 <div class="panel" id="accessPanel">
-                    <span class="panel-label">Accessibility</span>
+                    <span class="panel-label">Accessibility
+                        <i class="fas fa-info-circle wcag-info-icon" id="wcagInfoIcon" title="Click for WCAG contrast guide" style="margin-left:6px;opacity:0.5;cursor:help;font-size:0.7rem"></i>
+                    </span>
                     <div class="readability-score score-excellent" id="readabilityScore">
                         <i class="fas fa-check-circle"></i>
                         <span>Excellent</span>
@@ -350,7 +352,7 @@
                                     <input type="range" id="gradientAngle" value="135" min="0" max="360">
                                     <span id="angleValue">135°</span>
                                     <label>Type</label>
-                                    <select>
+                                    <select id="gradientType">
                                         <option value="linear" selected>Linear</option>
                                         <option value="radial">Radial</option>
                                     </select>
@@ -480,12 +482,11 @@
             bulkBtn.addEventListener('click', () => window.Chromatic.Gallery.bulkGenerate());
         }
 
-        // Compare mode — add button to palette actions if room, or triggered from gallery
-        // Use the existing share area for now
+        // Compare mode — add button to palette actions
         const compareBtn = document.createElement('button');
-        compareBtn.className = 'btn';
-        compareBtn.style.cssText = 'background:rgba(46,212,122,0.08);color:#2ed47a;border:1px solid rgba(46,212,122,0.2);font-size:0.8rem;padding:8px 13px';
+        compareBtn.className = 'btn btn-compare';
         compareBtn.innerHTML = '<i class="fas fa-columns"></i><span>Compare</span>';
+        compareBtn.title = 'Compare current palette with favorites or curated gallery palettes';
         compareBtn.addEventListener('click', () => window.Chromatic.Gallery.showCompareMode());
         const paletteActions = document.querySelector('.palette-actions');
         if (paletteActions) paletteActions.appendChild(compareBtn);
@@ -500,6 +501,40 @@
         const helpBtn = document.getElementById('helpBtn');
         if (helpBtn) {
             helpBtn.addEventListener('click', () => app.showOnboarding());
+        }
+
+        // WCAG info icon
+        const wcagIcon = document.getElementById('wcagInfoIcon');
+        if (wcagIcon) {
+            wcagIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const score = app.calculateReadabilityScore(app.displayedArrangement || app.currentPalette);
+                const content = `
+                    <div class="wcag-legend">
+                        <h3>WCAG Contrast Guide</h3>
+                        <p>Contrast ratios measure how easily text can be read against a background.</p>
+                        <div class="wcag-tiers">
+                            <div class="wcag-tier" style="border-left:4px solid #2ed47a">
+                                <strong>AAA (Enhanced)</strong> — Ratio ≥ 7:1<br>
+                                <small>Passes for all text sizes. Required for body text, UI components, and small text.</small>
+                            </div>
+                            <div class="wcag-tier" style="border-left:4px solid #34C759">
+                                <strong>AA (Minimum)</strong> — Ratio ≥ 4.5:1<br>
+                                <small>Passes for normal text. Most UI components meet this standard.</small>
+                            </div>
+                            <div class="wcag-tier" style="border-left:4px solid #f59e0b">
+                                <strong>Large Text (Lg)</strong> — Ratio ≥ 3:1<br>
+                                <small>Only passes for large or bold text above 18pt. Body text may be inaccessible.</small>
+                            </div>
+                            <div class="wcag-tier" style="border-left:4px solid #ff4d4d">
+                                <strong>Fail (!)</strong> — Ratio &lt; 3:1<br>
+                                <small>Insufficient for any text size. Adjust lightness or saturation.</small>
+                            </div>
+                        </div>
+                        <p style="margin-top:14px;font-size:0.8rem;color:var(--text-muted)"><strong>Current score:</strong> ${score.rating} (avg: ${score.score.toFixed(1)})</p>
+                    </div>`;
+                window.Chromatic.createModal('wcagGuideModal', content);
+            });
         }
 
         // Render favorites on init

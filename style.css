@@ -673,6 +673,15 @@ button { font-family: var(--font-sans); }
 }
 .btn-share:hover { background: rgba(245,158,11,0.16); }
 
+.btn-compare {
+    background: rgba(46,212,122,0.08);
+    color: #2ed47a;
+    border: 1px solid rgba(46,212,122,0.2);
+    font-size: 0.8rem;
+    padding: 8px 13px;
+}
+.btn-compare:hover { background: rgba(46,212,122,0.16); }
+
 /* ─── Browser Chrome ──────────────────────────────────────────────────────────── */
 .browser-chrome {
     display: flex;

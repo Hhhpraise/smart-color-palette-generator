@@ -995,6 +995,20 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
     margin-bottom: 10px;
 }
 
+.cmp-select optgroup {
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: normal;
+    padding: 6px 0;
+}
+
+.cmp-select option {
+    font-weight: 400;
+    color: var(--text);
+    padding: 4px 0;
+}
+
 .cmp-empty {
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -1020,6 +1034,12 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
 .cmp-table th {
     font-family: var(--font-sans);
     font-size: 0.68rem;
+}
+
+.cmp-table tfoot td {
+    border-top: 2px solid var(--border);
+    background: var(--surface-up);
+    font-weight: 500;
 }
 
 /* ─── Favorites Mini Sidebar ────────────────────────────────────────────── */
@@ -1127,4 +1147,44 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
         font-size: 0.7rem;
         padding: 7px 8px;
     }
+}
+
+/* ─── WCAG Legend Modal ─────────────────────────────────────────────────── */
+.wcag-legend h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.wcag-legend > p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.wcag-tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wcag-tier {
+    background: var(--surface-up);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    line-height: 1.5;
+}
+
+.wcag-tier strong {
+    font-size: 0.88rem;
+    color: var(--text);
+}
+
+.wcag-tier small {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
 }

@@ -188,10 +188,10 @@ async function copyToClipboard(text) {
 }
 
 function getContrastTier(ratio) {
-    if (ratio >= 7) return { tier: 'AAA', cls: 'tier-aaa', icon: 'star' };
-    if (ratio >= 4.5) return { tier: 'AA', cls: 'tier-aa', icon: 'check-circle' };
-    if (ratio >= 3) return { tier: 'Lg', cls: 'tier-lg', icon: 'info-circle', label: 'Large Text' };
-    return { tier: '!', cls: 'tier-fail', icon: 'exclamation-triangle', label: 'Fail' };
+    if (ratio >= 7) return { tier: 'AAA', cls: 'tier-aaa', icon: 'star', label: 'AAA', title: 'WCAG AAA: Enhanced — suitable for body text at any size (7:1+ contrast ratio)' };
+    if (ratio >= 4.5) return { tier: 'AA', cls: 'tier-aa', icon: 'check-circle', label: 'AA', title: 'WCAG AA: Minimum — meets accessibility standards for normal text (4.5:1+ contrast ratio)' };
+    if (ratio >= 3) return { tier: 'Lg', cls: 'tier-lg', icon: 'info-circle', label: 'Large Text Only', title: 'WCAG Large Text: Only passes for large/bold text above 18pt (3:1+ contrast ratio)' };
+    return { tier: '!', cls: 'tier-fail', icon: 'exclamation-triangle', label: 'Fail', title: 'Fails WCAG: Insufficient contrast for any text size' };
 }
 
 window.Chromatic.ColorTheory = ColorTheory;

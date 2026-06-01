@@ -108,9 +108,26 @@ function showCompareMode() {
     }
 
     const favorites = C.Storage.getFavorites();
-    const options = favorites.map((f, i) =>
-        `<option value="${i}">${f.name} (${f.algorithm})</option>`
-    ).join('');
+    const curated = CURATED_PALETTES;
+
+    // Build combined options: favorites first, then curated
+    let options = '';
+    if (favorites.length > 0) {
+        options += '<optgroup label="Your Favorites">';
+        favorites.forEach((f, i) => {
+            options += `<option value="fav:${i}">⭐ ${f.name} (${f.algorithm})</option>`;
+        });
+        options += '</optgroup>';
+    }
+    if (curated.length > 0) {
+        options += '<optgroup label="Curated Gallery">';
+        curated.forEach((p, i) => {
+            options += `<option value="cur:${i}">${p.name} (${p.tags.join(', ')})</option>`;
+        });
+        options += '</optgroup>';
+    }
+
+    const hasPalettes = favorites.length > 0 || curated.length > 0;
 
     const currentColors = app.currentPalette.map(c =>
         `<span class="cmp-swatch" style="background:${c}"><span>${c.toUpperCase()}</span></span>`
@@ -119,6 +136,10 @@ function showCompareMode() {
     const content = `
         <div class="compare-view">
             <h3>Compare Palettes</h3>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">
+                See how your current palette contrasts with any saved favorite or curated gallery palette.
+                Green cells meet WCAG AA (≥4.5:1), yellow is marginal (≥3:1), red fails.
+            </p>
             <div class="cmp-columns">
                 <div class="cmp-col">
                     <h4>Current Palette</h4>
@@ -126,9 +147,9 @@ function showCompareMode() {
                 </div>
                 <div class="cmp-col">
                     <h4>Compare With</h4>
-                    ${favorites.length > 0
+                    ${hasPalettes
                         ? `<select id="cmpSelect" class="cmp-select">${options}</select>`
-                        : '<p class="cmp-empty">Save some favorites first to compare.</p>'}
+                        : '<p class="cmp-empty">No palettes available to compare.</p>'}
                     <div class="cmp-strip" id="cmpTarget"></div>
                 </div>
             </div>
@@ -137,12 +158,25 @@ function showCompareMode() {
 
     const { close } = C.createModal('compareModal', content);
 
-    const updateCompare = (idx) => {
-        const fav = favorites[idx];
-        if (!fav) return;
+    if (!hasPalettes) return;
+
+    const updateCompare = (value) => {
+        let targetPalette;
+        const [type, idxStr] = value.split(':');
+        const idx = parseInt(idxStr, 10);
+
+        if (type === 'fav') {
+            targetPalette = favorites[idx];
+        } else if (type === 'cur') {
+            targetPalette = curated[idx];
+        }
+
+        if (!targetPalette) return;
+        const targetColors = targetPalette.colors;
+
         const targetEl = document.getElementById('cmpTarget');
         if (targetEl) {
-            targetEl.innerHTML = fav.colors.map(c =>
+            targetEl.innerHTML = targetColors.map(c =>
                 `<span class="cmp-swatch" style="background:${c}"><span>${c.toUpperCase()}</span></span>`
             ).join('');
         }
@@ -150,28 +184,45 @@ function showCompareMode() {
         // Contrast grid
         const grid = document.getElementById('cmpGrid');
         if (!grid) return;
-        let table = '<table class="cmp-table"><tr><th></th>';
-        fav.colors.forEach((c, i) => {
+        let table = '<table class="cmp-table"><thead><tr><th></th>';
+        targetColors.forEach((c, i) => {
             table += `<th style="background:${c};color:${C.bestTextColor(c)}">C${i + 1}</th>`;
         });
-        table += '</tr>';
+        table += '</tr></thead><tbody>';
         app.currentPalette.forEach((c1, i) => {
             table += `<tr><th style="background:${c1};color:${C.bestTextColor(c1)}">P${i + 1}</th>`;
-            fav.colors.forEach((c2) => {
+            targetColors.forEach((c2) => {
                 const ratio = C.getContrastRatio(c1, c2);
                 const tier = C.getContrastTier(ratio);
-                table += `<td class="${tier.cls}" title="${ratio.toFixed(1)}:1">${ratio.toFixed(1)}</td>`;
+                table += `<td class="${tier.cls}" title="${ratio.toFixed(1)}:1 — ${tier.title || ''}">${ratio.toFixed(1)}</td>`;
             });
             table += '</tr>';
         });
-        table += '</table>';
+        table += '</tbody>';
+
+        // Summary
+        const allRatios = [];
+        app.currentPalette.forEach(c1 => {
+            targetColors.forEach(c2 => {
+                allRatios.push(C.getContrastRatio(c1, c2));
+            });
+        });
+        const passAA = allRatios.filter(r => r >= 4.5).length;
+        const total = allRatios.length;
+        const pct = total > 0 ? Math.round(passAA / total * 100) : 0;
+        const summaryColor = pct >= 80 ? '#2ed47a' : pct >= 50 ? '#f59e0b' : '#ff4d4d';
+        table += `<tfoot><tr><td colspan="${targetColors.length + 1}" style="text-align:center;padding:10px;font-size:0.78rem;color:${summaryColor}">
+            <strong>${pct}%</strong> of pairings pass WCAG AA (${passAA}/${total} ≥ 4.5:1)
+        </td></tr></tfoot></table>`;
+
         grid.innerHTML = table;
     };
 
     const select = document.getElementById('cmpSelect');
     if (select) {
-        select.addEventListener('change', () => updateCompare(parseInt(select.value)));
-        if (favorites.length > 0) updateCompare(0);
+        select.addEventListener('change', () => updateCompare(select.value));
+        // Trigger with first option
+        updateCompare(select.value);
     }
 }
 
@@ -228,11 +279,13 @@ function bulkGenerate() {
             document.querySelectorAll('.harmony-btn').forEach(b => b.classList.toggle('active', b.dataset.algorithm === v.algorithm));
             app.currentPalette = [...v.colors];
             app.displayedArrangement = [...v.colors];
+            app._rawPreviewColors = [...v.colors];
             app.displayPalette(app.currentPalette);
             app.applyWebsiteColors(app.displayedArrangement);
             app.updateReadabilityUI(app.calculateReadabilityScore(app.currentPalette));
             app.updateHarmonyPreviews(baseHex);
             C.showNotification('Variation applied.');
+            app.switchToPaletteTab();
         });
     });
 }

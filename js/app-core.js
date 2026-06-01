@@ -65,6 +65,7 @@ const App = {
     displayedArrangement: [],
     lockedColors: new Set(),
     copyFormat: 'hex',
+    currentCVD: null,
 
     init() {
         const settings = C.Storage.getSettings();
@@ -157,6 +158,15 @@ const App = {
                 if (tab === 'tools') this.renderTools();
             });
         });
+    },
+
+    switchToPaletteTab() {
+        $$('.tab-btn').forEach(b => b.classList.remove('active'));
+        const tab = $('.tab-btn[data-tab="palette"]');
+        if (tab) tab.classList.add('active');
+        $$('.tab-pane').forEach(p => p.classList.remove('active'));
+        const pane = $('#tab-palette');
+        if (pane) pane.classList.add('active');
     },
 
     // ── Events ──
@@ -277,6 +287,7 @@ const App = {
 
         const best = this.findBestReadabilityArrangement(this.currentPalette, this.lockedColors);
         this.displayedArrangement = best.arrangement;
+        this._rawPreviewColors = [...this.displayedArrangement];
 
         this.applyWebsiteColors(this.displayedArrangement);
         this.displayPalette(this.currentPalette);
@@ -294,7 +305,7 @@ const App = {
     },
 
     calculateReadabilityScore(palette) {
-        if (palette.length < 3) return { score: 0, rating: 'Needs Work', className: 'score-poor' };
+        if (palette.length < 3) return { score: 0, rating: 'Needs Work', className: 'score-poor', title: 'Insufficient data — need at least 3 colors' };
 
         let total = 0, count = 0;
         const bgRatio = C.getContrastRatio(palette[0], C.bestTextColor(palette[0]));
@@ -316,11 +327,18 @@ const App = {
         }
 
         const avg = total / Math.max(1, count);
+        const TITLES = {
+            'AAA': 'WCAG AAA (Enhanced): All text meets the highest accessibility standard. Body text, large text, and UI components all have sufficient contrast.',
+            'AA': 'WCAG AA (Minimum): Meets the standard for normal-sized text. Most UI components are accessible.',
+            'Large Text': 'WCAG Large Text Only: Only passes for large or bold text (≥18pt). Smaller body text may be hard to read.',
+            'Needs Work': 'Fails WCAG: Insufficient contrast. Consider adjusting lightness or saturation of these colors.',
+        };
         const rating = avg >= 2.5 ? 'AAA' : avg >= 1.8 ? 'AA' : avg >= 1.2 ? 'Large Text' : 'Needs Work';
         return {
             score: avg,
             rating,
             className: avg >= 2.5 ? 'score-aaa' : avg >= 1.8 ? 'score-aa' : avg >= 1.2 ? 'score-lg' : 'score-poor',
+            title: TITLES[rating],
         };
     },
 
@@ -353,6 +371,7 @@ const App = {
         const colors = { 'AAA': '#2ed47a', 'AA': '#34C759', 'Large Text': '#f59e0b', 'Needs Work': '#ff4d4d' };
         el.innerHTML = `<i class="fas fa-${icons[score.rating] || 'exclamation-triangle'}" style="color:${colors[score.rating] || '#ff4d4d'}"></i><span>${score.rating}</span>`;
         el.className = `readability-score ${score.className}`;
+        el.title = score.title || '';
     },
 
     // ── Harmony Preview Dots ──
@@ -422,6 +441,51 @@ const App = {
             bgAnimation.style.background =
                 `linear-gradient(-45deg, ${c0}, ${c1}, ${c2 ?? c0}, ${c3 ?? c1})`;
         }
+
+        // Re-apply active CVD simulation so it survives palette changes
+        this._rawPreviewColors = [...palette];
+        if (this.currentCVD) {
+            const sim = palette.map(c => C.Tools.simulateColorBlindness(c, this.currentCVD));
+            this._applyPreviewColorsFrom(sim);
+        }
+    },
+
+    // Internal: re-apply just the preview element colors after CVD transform
+    _applyPreviewColorsFrom(palette) {
+        if (palette.length < 3) return;
+        const [c0, c1, c2, c3] = palette;
+        const hero = $('.mockup-hero');
+        const nav = $('.mockup-nav');
+        const footer = $('.mockup-footer');
+        const buttons = $$('.mockup-btn');
+        const featureCards = $$('.feature-card');
+
+        if (hero) {
+            hero.style.background = `linear-gradient(135deg, ${c0}, ${c1})`;
+            hero.style.color = C.bestTextColor(c0);
+        }
+        if (nav) {
+            nav.style.backgroundColor = c0;
+            nav.style.color = C.bestTextColor(c0);
+        }
+        if (footer) {
+            footer.style.backgroundColor = c0;
+            footer.style.color = C.bestTextColor(c0);
+        }
+        buttons.forEach((btn, i) => {
+            const color = i === 0 ? c2 : c3;
+            if (!color) return;
+            btn.style.backgroundColor = color;
+            btn.style.color = C.bestTextColor(color);
+        });
+        featureCards.forEach((card, i) => {
+            const color = palette[i + 2];
+            if (!color) return;
+            card.style.backgroundColor = `${color}20`;
+            card.style.color = '#1d1d1f';
+            const icon = card.querySelector('i');
+            if (icon) icon.style.color = color;
+        });
     },
 
     optimizeReadability() {
@@ -484,7 +548,7 @@ const App = {
                     <div class="hex-code">${color.toUpperCase()}</div>
                     <div class="rgb-code">RGB ${rgb.r}, ${rgb.g}, ${rgb.b}</div>
                     <div class="rgb-code">HSL ${Math.round(h)}° ${Math.round(s)}% ${Math.round(l)}%</div>
-                    <div class="contrast-badge ${tier.cls}" title="White text contrast: ${contrastRatio.toFixed(1)}:1">${tier.tier}</div>
+                    <div class="contrast-badge ${tier.cls}" title="${tier.title || 'Contrast: ' + contrastRatio.toFixed(1) + ':1'}">${tier.label || tier.tier}</div>
                 </div>
                 <button class="lock-btn ${isLocked ? 'locked' : ''}" data-index="${index}" aria-label="${isLocked ? 'Unlock' : 'Lock'} color" title="${isLocked ? 'Unlock' : 'Lock'} color">
                     <i class="fas fa-${isLocked ? 'lock' : 'lock-open'}"></i>
@@ -657,13 +721,7 @@ const App = {
                 this.updateReadabilityUI(this.calculateReadabilityScore(this.currentPalette));
                 this.updateHarmonyPreviews(entry.baseColor || entry.colors[0]);
 
-                // Switch to palette tab
-                $$('.tab-btn').forEach(b => b.classList.remove('active'));
-                const paletteTab = $('.tab-btn[data-tab="palette"]');
-                if (paletteTab) paletteTab.classList.add('active');
-                $$('.tab-pane').forEach(p => p.classList.remove('active'));
-                const palettePane = $('#tab-palette');
-                if (palettePane) palettePane.classList.add('active');
+                this.switchToPaletteTab();
 
                 showNotification('Palette restored from history.');
             });
@@ -694,11 +752,13 @@ const App = {
                 $$('.harmony-btn').forEach(b => b.classList.toggle('active', b.dataset.algorithm === this.currentAlgorithm));
                 this.currentPalette = [...p.colors];
                 this.displayedArrangement = [...p.colors];
+                this._rawPreviewColors = [...p.colors];
                 this.displayPalette(this.currentPalette);
                 this.applyWebsiteColors(this.displayedArrangement);
                 this.updateReadabilityUI(this.calculateReadabilityScore(this.currentPalette));
                 this.updateHarmonyPreviews(p.colors[0]);
                 showNotification(`"${p.name}" loaded.`);
+                this.switchToPaletteTab();
             });
         });
     },
@@ -744,6 +804,10 @@ const App = {
         $$('.grad-stop-pos').forEach(input => {
             input.addEventListener('input', () => this.updateGradientPreview());
         });
+        const gradType = $('#gradientType');
+        if (gradType) {
+            gradType.addEventListener('change', () => this.updateGradientPreview());
+        }
 
         this.updateGradientPreview();
     },
@@ -823,7 +887,7 @@ const App = {
 
     updateGradientPreview() {
         const angle = $('#gradientAngle')?.value || '135';
-        const type = $('input[name="gradType"]:checked')?.value || 'linear';
+        const type = $('#gradientType')?.value || 'linear';
 
         const stops = [];
         $$('.grad-stop').forEach(stop => {
@@ -1000,6 +1064,7 @@ const App = {
                 this.applyWebsiteColors(this.displayedArrangement);
                 this.updateReadabilityUI(this.calculateReadabilityScore(this.currentPalette));
                 this.updateHarmonyPreviews(fav.baseColor);
+                this.switchToPaletteTab();
             });
         });
     },
