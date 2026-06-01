@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style-additions.css">
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -26,9 +28,23 @@
                 <span class="brand-tag">Studio</span>
             </div>
             <div class="header-hint">
-                <kbd>Space</kbd> random &middot; <kbd>1–5</kbd> harmony mode
+                <kbd>Space</kbd> random &middot; <kbd>1–5</kbd> harmony
             </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Toggle dark/light mode">
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="theme-toggle" id="helpBtn" aria-label="Help" title="Show guide" style="margin-left:4px">
+                <i class="fas fa-question"></i>
+            </button>
         </header>
+
+        <!-- ── Tab Bar ─────────────────────────────────────────────── -->
+        <nav class="tab-bar" role="tablist">
+            <button class="tab-btn active" data-tab="palette" role="tab"><i class="fas fa-palette" style="margin-right:6px"></i>Palette</button>
+            <button class="tab-btn" data-tab="history" role="tab"><i class="fas fa-history" style="margin-right:6px"></i>History</button>
+            <button class="tab-btn" data-tab="gallery" role="tab"><i class="fas fa-images" style="margin-right:6px"></i>Gallery</button>
+            <button class="tab-btn" data-tab="tools" role="tab"><i class="fas fa-tools" style="margin-right:6px"></i>Tools</button>
+        </nav>
 
         <!-- ── App Layout ──────────────────────────────────────────── -->
         <div class="app-layout">
@@ -69,26 +85,31 @@
                         <button class="harmony-btn active" data-algorithm="monochromatic">
                             <span class="hbtn-dot"></span>
                             <span class="hbtn-name">Monochromatic</span>
+                            <span class="hbtn-chips"></span>
                             <kbd class="hbtn-key">1</kbd>
                         </button>
                         <button class="harmony-btn" data-algorithm="complementary">
                             <span class="hbtn-dot"></span>
                             <span class="hbtn-name">Complementary</span>
+                            <span class="hbtn-chips"></span>
                             <kbd class="hbtn-key">2</kbd>
                         </button>
                         <button class="harmony-btn" data-algorithm="analogous">
                             <span class="hbtn-dot"></span>
                             <span class="hbtn-name">Analogous</span>
+                            <span class="hbtn-chips"></span>
                             <kbd class="hbtn-key">3</kbd>
                         </button>
                         <button class="harmony-btn" data-algorithm="triadic">
                             <span class="hbtn-dot"></span>
                             <span class="hbtn-name">Triadic</span>
+                            <span class="hbtn-chips"></span>
                             <kbd class="hbtn-key">4</kbd>
                         </button>
                         <button class="harmony-btn" data-algorithm="splitComplementary">
                             <span class="hbtn-dot"></span>
                             <span class="hbtn-name">Split-Complementary</span>
+                            <span class="hbtn-chips"></span>
                             <kbd class="hbtn-key">5</kbd>
                         </button>
                     </div>
@@ -113,105 +134,250 @@
                     </div>
                 </div>
 
+                <!-- Favorites Mini -->
+                <div class="panel favorites-mini" id="favPanel">
+                    <span class="panel-label">Saved Palettes</span>
+                    <div id="favoritesMini">
+                        <div class="fav-empty">No favorites yet</div>
+                    </div>
+                    <button class="btn-save-fav" id="saveFavBtn" style="width:100%;margin-top:8px">
+                        <i class="fas fa-star"></i> Save Current
+                    </button>
+                </div>
+
             </aside>
 
             <!-- ── Main Canvas ── -->
             <main class="app-main">
 
-                <!-- Palette Panel -->
+                <!-- Palette Swatches — always visible -->
                 <div class="panel panel-palette">
                     <div class="panel-row">
                         <span class="panel-label" style="margin-bottom:0">Palette</span>
-                        <span class="palette-name" id="paletteName">Monochromatic</span>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span class="palette-name" id="paletteName">Monochromatic</span>
+                            <span class="palette-name" id="aiPaletteName" style="background:rgba(245,158,11,0.08);color:#f59e0b;border-color:rgba(245,158,11,0.2);display:none"></span>
+                        </div>
                     </div>
                     <div class="palette-grid" id="paletteGrid">
                         <!-- Color strips injected by JS -->
                     </div>
-                    <div class="palette-actions">
-                        <button class="btn btn-export" id="exportPNG">
-                            <i class="fas fa-download"></i><span>PNG</span>
-                        </button>
-                        <button class="btn btn-export" id="exportSVG">
-                            <i class="fas fa-file-export"></i><span>SVG</span>
-                        </button>
-                        <button class="btn btn-copy" id="copyAllBtn">
-                            <i class="fas fa-copy"></i><span>Copy All</span>
-                        </button>
-                        <button class="btn btn-css" id="copyCSSBtn">
-                            <i class="fas fa-code"></i><span>CSS Vars</span>
-                        </button>
-                        <button class="btn btn-share" id="shareBtn">
-                            <i class="fas fa-link"></i><span>Share</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Live Preview Panel -->
-                <div class="panel panel-preview">
-                    <div class="panel-row">
-                        <span class="panel-label" style="margin-bottom:0">
-                            <i class="fas fa-desktop" style="margin-right:6px;opacity:.6"></i>Live Preview
-                        </span>
-                    </div>
-
-                    <!-- Fake browser chrome -->
-                    <div class="browser-chrome">
-                        <div class="browser-dots">
-                            <span></span><span></span><span></span>
+                    <div class="panel-row" style="flex-wrap:wrap;gap:6px">
+                        <div class="palette-actions">
+                            <button class="btn btn-export" id="exportPNG">
+                                <i class="fas fa-download"></i><span>PNG</span>
+                            </button>
+                            <button class="btn btn-export" id="exportSVG">
+                                <i class="fas fa-file-export"></i><span>SVG</span>
+                            </button>
+                            <button class="btn btn-export" id="exportPDFBtn">
+                                <i class="fas fa-file-pdf"></i><span>PDF</span>
+                            </button>
+                            <button class="btn btn-css" id="tailwindBtn">
+                                <i class="fas fa-code"></i><span>Tailwind</span>
+                            </button>
+                            <button class="btn btn-css" id="copyCSSBtn">
+                                <i class="fas fa-code"></i><span>CSS Vars</span>
+                            </button>
+                            <button class="btn btn-copy" id="copyAllBtn">
+                                <i class="fas fa-copy"></i><span>Copy All</span>
+                            </button>
+                            <button class="btn btn-share" id="shareBtn">
+                                <i class="fas fa-link"></i><span>Share</span>
+                            </button>
                         </div>
-                        <div class="browser-url">yourwebsite.com</div>
-                    </div>
-
-                    <div class="preview-container">
-                        <div class="website-mockup">
-                            <nav class="mockup-nav">
-                                <div class="nav-brand">YourBrand</div>
-                                <div class="nav-links">
-                                    <a href="#" class="nav-link">Home</a>
-                                    <a href="#" class="nav-link">About</a>
-                                    <a href="#" class="nav-link">Services</a>
-                                    <a href="#" class="nav-link">Contact</a>
-                                </div>
-                            </nav>
-
-                            <div class="mockup-hero">
-                                <h3 class="hero-title">Welcome to Your Website</h3>
-                                <p class="hero-text">This shows how your color palette looks in a real design. All elements update dynamically.</p>
-                                <div class="hero-actions">
-                                    <button class="mockup-btn primary-btn">Primary Action</button>
-                                    <button class="mockup-btn secondary-btn">Learn More</button>
-                                </div>
-                            </div>
-
-                            <div class="mockup-features">
-                                <div class="feature-card">
-                                    <i class="fas fa-bolt"></i>
-                                    <h4>Fast & Reliable</h4>
-                                    <p>Lightning-fast performance</p>
-                                </div>
-                                <div class="feature-card">
-                                    <i class="fas fa-shield-alt"></i>
-                                    <h4>Secure</h4>
-                                    <p>Enterprise-grade security</p>
-                                </div>
-                                <div class="feature-card">
-                                    <i class="fas fa-mobile-alt"></i>
-                                    <h4>Responsive</h4>
-                                    <p>Perfect on all devices</p>
-                                </div>
-                            </div>
-
-                            <footer class="mockup-footer">
-                                <p>© 2024 YourBrand. All rights reserved.</p>
-                                <div class="footer-links">
-                                    <a href="#">Privacy</a>
-                                    <a href="#">Terms</a>
-                                    <a href="#">Contact</a>
-                                </div>
-                            </footer>
+                        <div class="format-pills">
+                            <button class="format-pill active" data-format="hex">HEX</button>
+                            <button class="format-pill" data-format="rgb">RGB</button>
+                            <button class="format-pill" data-format="hsl">HSL</button>
                         </div>
                     </div>
                 </div>
+
+                <!-- ── Tab Content ──────────────────────────────── -->
+                <div class="tab-content">
+
+                    <!-- Tab: Preview -->
+                    <div class="tab-pane active" id="tab-palette">
+                        <div class="panel panel-preview">
+                            <div class="panel-row">
+                                <span class="panel-label" style="margin-bottom:0">
+                                    <i class="fas fa-desktop" style="margin-right:6px;opacity:.6"></i>Live Preview
+                                </span>
+                            </div>
+
+                            <!-- Color Blindness Toggle -->
+                            <div class="cvd-bar">
+                                <button class="cvd-btn active" data-cvd="normal">Normal</button>
+                                <button class="cvd-btn" data-cvd="protanopia">Protanopia</button>
+                                <button class="cvd-btn" data-cvd="deuteranopia">Deuteranopia</button>
+                                <button class="cvd-btn" data-cvd="tritanopia">Tritanopia</button>
+                            </div>
+
+                            <!-- Fake browser chrome -->
+                            <div class="browser-chrome">
+                                <div class="browser-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="browser-url">yourwebsite.com</div>
+                            </div>
+
+                            <div class="preview-container">
+                                <div class="website-mockup">
+                                    <nav class="mockup-nav">
+                                        <div class="nav-brand">YourBrand</div>
+                                        <div class="nav-links">
+                                            <a href="#" class="nav-link">Home</a>
+                                            <a href="#" class="nav-link">About</a>
+                                            <a href="#" class="nav-link">Services</a>
+                                            <a href="#" class="nav-link">Contact</a>
+                                        </div>
+                                    </nav>
+
+                                    <div class="mockup-hero">
+                                        <h3 class="hero-title">Welcome to Your Website</h3>
+                                        <p class="hero-text">This shows how your color palette looks in a real design. All elements update dynamically.</p>
+                                        <div class="hero-actions">
+                                            <button class="mockup-btn primary-btn">Primary Action</button>
+                                            <button class="mockup-btn secondary-btn">Learn More</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mockup-features">
+                                        <div class="feature-card">
+                                            <i class="fas fa-bolt"></i>
+                                            <h4>Fast & Reliable</h4>
+                                            <p>Lightning-fast performance</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <i class="fas fa-shield-alt"></i>
+                                            <h4>Secure</h4>
+                                            <p>Enterprise-grade security</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <i class="fas fa-mobile-alt"></i>
+                                            <h4>Responsive</h4>
+                                            <p>Perfect on all devices</p>
+                                        </div>
+                                    </div>
+
+                                    <footer class="mockup-footer">
+                                        <p>© 2024 YourBrand. All rights reserved.</p>
+                                        <div class="footer-links">
+                                            <a href="#">Privacy</a>
+                                            <a href="#">Terms</a>
+                                            <a href="#">Contact</a>
+                                        </div>
+                                    </footer>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: History -->
+                    <div class="tab-pane" id="tab-history">
+                        <div class="panel">
+                            <div class="history-actions">
+                                <span class="panel-label" style="margin-bottom:0">Recent Palettes</span>
+                                <button class="btn-clear" id="clearHistoryBtn">Clear All</button>
+                            </div>
+                            <div class="history-grid" id="historyGrid">
+                                <div class="empty-state">
+                                    <i class="fas fa-history"></i>
+                                    <p>No recent palettes. Generate one first!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Gallery -->
+                    <div class="tab-pane" id="tab-gallery">
+                        <div class="panel">
+                            <span class="panel-label">Curated Palettes</span>
+                            <div class="gallery-grid" id="galleryGrid">
+                                <!-- Populated by JS -->
+                            </div>
+
+                            <div class="bulk-section">
+                                <div class="bulk-header">
+                                    <span class="panel-label" style="margin-bottom:0">Bulk Generate</span>
+                                    <button class="btn-bulk" id="bulkGenerateBtn">
+                                        <i class="fas fa-magic"></i> Generate 12 Variations
+                                    </button>
+                                </div>
+                                <div class="bulk-grid" id="bulkGrid">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Tools -->
+                    <div class="tab-pane" id="tab-tools">
+                        <div class="tools-grid" id="toolsContainer">
+
+                            <!-- Image Color Extraction -->
+                            <div class="tool-card">
+                                <h4><i class="fas fa-camera" style="margin-right:6px"></i>Image Color Extraction</h4>
+                                <div class="image-drop-zone" id="imageDropZone">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drop an image or click to upload</p>
+                                    <small>Extracts 6 dominant colors</small>
+                                    <input type="file" id="imageFileInput" accept="image/*" style="display:none">
+                                </div>
+                                <div class="extracted-colors" id="extractedColors"></div>
+                                <button class="btn-use-extracted" id="useExtractedBtn" style="display:none">
+                                    <i class="fas fa-palette"></i> Use Extracted Colors
+                                </button>
+                            </div>
+
+                            <!-- Gradient Builder -->
+                            <div class="tool-card">
+                                <h4><i class="fas fa-fill-drip" style="margin-right:6px"></i>Gradient Builder</h4>
+                                <div class="gradient-preview" id="gradientPreview"></div>
+                                <div class="gradient-stops">
+                                    <div class="grad-stop">
+                                        <input type="color" class="grad-stop-color" value="#000000" title="Color stop 1">
+                                        <input type="number" class="grad-stop-pos" value="0" min="0" max="100" title="Position %">
+                                    </div>
+                                    <div class="grad-stop">
+                                        <input type="color" class="grad-stop-color" value="#ffffff" title="Color stop 2">
+                                        <input type="number" class="grad-stop-pos" value="100" min="0" max="100" title="Position %">
+                                    </div>
+                                </div>
+                                <div class="gradient-controls">
+                                    <label>Angle</label>
+                                    <input type="range" id="gradientAngle" value="135" min="0" max="360">
+                                    <span id="angleValue">135°</span>
+                                    <label>Type</label>
+                                    <select>
+                                        <option value="linear" selected>Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div class="gradient-code" id="gradientCode">background: linear-gradient(135deg, #000000 0%, #ffffff 100%);</div>
+                                <button class="btn-copy-gradient" id="copyGradientBtn">
+                                    <i class="fas fa-copy"></i> Copy CSS
+                                </button>
+                            </div>
+
+                            <!-- Quick Tips -->
+                            <div class="tool-card tool-card-full">
+                                <h4><i class="fas fa-info-circle" style="margin-right:6px"></i>Quick Tips</h4>
+                                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:0.8rem;color:var(--text-muted)">
+                                    <div><strong>Lock colors:</strong> Click the lock icon on any swatch to preserve it during regeneration.</div>
+                                    <div><strong>Drag to reorder:</strong> Grab the grip handle on swatches to manually arrange your palette.</div>
+                                    <div><strong>Tints & shades:</strong> Double-click any color swatch to see its full spectrum.</div>
+                                    <div><strong>Copy format:</strong> Use the HEX/RGB/HSL pills to change default copy behavior. Shift+click for RGB, Alt+click for HSL.</div>
+                                    <div><strong>Color blindness:</strong> Toggle simulation modes above the live preview to check accessibility.</div>
+                                    <div><strong>Compare:</strong> Save palettes to favorites, then use the Compare button to see contrast grids.</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div><!-- /tab-content -->
 
             </main>
         </div>
@@ -250,6 +416,105 @@
     <!-- Export canvas (hidden) -->
     <canvas id="exportCanvas" style="display:none"></canvas>
 
-    <script src="script.js"></script>
+    <!-- ── Scripts (dependency order matters) ─────────────────────── -->
+    <script src="js/color-theory.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app-core.js"></script>
+    <script src="js/app-gallery.js"></script>
+    <script src="js/app-tools.js"></script>
+    <!-- Entry point — only this file calls init -->
+    <script>
+    'use strict';
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = window.Chromatic.App;
+        app.init();
+
+        // Wire up extra buttons that exist in the new HTML
+
+        // PDF export
+        const pdfBtn = document.getElementById('exportPDFBtn');
+        if (pdfBtn) pdfBtn.addEventListener('click', () => app.exportAsPDF());
+
+        // Tailwind config
+        const twBtn = document.getElementById('tailwindBtn');
+        if (twBtn) twBtn.addEventListener('click', () => app.exportTailwindConfig());
+
+        // CSS vars
+        const cssBtn = document.getElementById('copyCSSBtn');
+        if (cssBtn) cssBtn.addEventListener('click', () => app.copyCSSVariables());
+
+        // Share
+        const shareBtn = document.getElementById('shareBtn');
+        if (shareBtn) shareBtn.addEventListener('click', () => app.sharePalette());
+
+        // Save favorite
+        const saveFavBtn = document.getElementById('saveFavBtn');
+        if (saveFavBtn) {
+            saveFavBtn.addEventListener('click', () => {
+                const name = prompt('Name this palette:', app.currentAlgorithm);
+                if (name) app.saveCurrentToFavorites(name);
+            });
+        }
+
+        // Clear history
+        const clearBtn = document.getElementById('clearHistoryBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Clear all palette history?')) {
+                    window.Chromatic.Storage.clearHistory();
+                    app.renderHistory();
+                }
+            });
+        }
+
+        // Color blindness buttons
+        document.querySelectorAll('.cvd-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.Chromatic.Tools.applyColorBlindSim(btn.dataset.cvd);
+            });
+        });
+
+        // Bulk generate
+        const bulkBtn = document.getElementById('bulkGenerateBtn');
+        if (bulkBtn) {
+            bulkBtn.addEventListener('click', () => window.Chromatic.Gallery.bulkGenerate());
+        }
+
+        // Compare mode — add button to palette actions if room, or triggered from gallery
+        // Use the existing share area for now
+        const compareBtn = document.createElement('button');
+        compareBtn.className = 'btn';
+        compareBtn.style.cssText = 'background:rgba(46,212,122,0.08);color:#2ed47a;border:1px solid rgba(46,212,122,0.2);font-size:0.8rem;padding:8px 13px';
+        compareBtn.innerHTML = '<i class="fas fa-columns"></i><span>Compare</span>';
+        compareBtn.addEventListener('click', () => window.Chromatic.Gallery.showCompareMode());
+        const paletteActions = document.querySelector('.palette-actions');
+        if (paletteActions) paletteActions.appendChild(compareBtn);
+
+        // Copy gradient button
+        const copyGradBtn = document.getElementById('copyGradientBtn');
+        if (copyGradBtn) {
+            copyGradBtn.addEventListener('click', () => app.copyGradientCSS());
+        }
+
+        // Help button re-shows onboarding
+        const helpBtn = document.getElementById('helpBtn');
+        if (helpBtn) {
+            helpBtn.addEventListener('click', () => app.showOnboarding());
+        }
+
+        // Render favorites on init
+        app.renderFavoritesMini();
+
+        // Set initial gradient colors from current palette
+        setTimeout(() => {
+            if (app.currentPalette.length >= 2) {
+                const stops = document.querySelectorAll('.grad-stop-color');
+                if (stops[0]) stops[0].value = app.currentPalette[0];
+                if (stops[1]) stops[1].value = app.currentPalette[app.currentPalette.length - 1];
+                app.updateGradientPreview();
+            }
+        }, 300);
+    });
+    </script>
 </body>
 </html>
