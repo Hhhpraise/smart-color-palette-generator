@@ -1,7 +1,6 @@
 'use strict';
 
-window.Chromatic = window.Chromatic || {};
-const C = window.Chromatic;
+// C is already declared in app-core.js which loads first — do NOT redeclare
 
 // ─── Curated Palettes ─────────────────────────────────────────────────────
 const CURATED_PALETTES = [

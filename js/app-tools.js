@@ -1,7 +1,6 @@
 'use strict';
 
-window.Chromatic = window.Chromatic || {};
-const C = window.Chromatic;
+// C is already declared in app-core.js which loads first — do NOT redeclare
 
 // ─── Color Blindness Simulation (Machado 2009 / Brettel-Vienot-Mollon) ──────
 // Uses LMS-space projection matrices to simulate dichromatic vision.
@@ -60,7 +59,7 @@ function rgbArrToHex([r, g, b]) {
     return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
-// Projection matrices for dichromatic vision (Viénot-Brettel-Mollon 1999).
+// Projection matrices for dichromatic vision (Vienot-Brettel-Mollon 1999).
 // These map the LMS response of a normal trichromat onto the dichromat's
 // reduced-colour plane (the plane of constant L+M+S).
 const DEFICIENCY_MATRICES = {
@@ -101,30 +100,30 @@ function applyColorBlindSim(type) {
 
     const btns = document.querySelectorAll('.cvd-btn');
     btns.forEach(b => b.classList.remove('active'));
-    const activeBtn = document.querySelector(`.cvd-btn[data-cvd="${type}"]`);
+    const activeBtn = document.querySelector('.cvd-btn[data-cvd="' + type + '"]');
     if (activeBtn) activeBtn.classList.add('active');
 
     app.currentCVD = type === 'normal' ? null : type;
 
     // Always pass the raw displayed colors — applyWebsiteColors handles CVD via currentCVD flag
     const raw = app._rawPreviewColors && app._rawPreviewColors.length
-        ? [...app._rawPreviewColors]
-        : [...app.displayedArrangement];
+        ? app._rawPreviewColors.slice()
+        : app.displayedArrangement.slice();
     app.applyWebsiteColors(raw);
 
     if (type === 'normal') {
         app.updateReadabilityUI(app.calculateReadabilityScore(app.displayedArrangement));
     } else {
-        const simulated = raw.map(c => simulateColorBlindness(c, type));
+        const simulated = raw.map(function(c) { return simulateColorBlindness(c, type); });
         app.updateReadabilityUI(app.calculateReadabilityScore(simulated));
-        C.showNotification(`Simulating ${activeBtn ? activeBtn.textContent : type}.`);
+        C.showNotification('Simulating ' + (activeBtn ? activeBtn.textContent : type) + '.');
     }
 }
 
 // Attach
-const Tools = {
-    simulateColorBlindness,
-    applyColorBlindSim,
+var Tools = {
+    simulateColorBlindness: simulateColorBlindness,
+    applyColorBlindSim: applyColorBlindSim,
 };
 
 window.Chromatic.Tools = Tools;
