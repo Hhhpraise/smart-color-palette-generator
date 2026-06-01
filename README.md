@@ -4,57 +4,69 @@
 [![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://hhhpraise.github.io/smart-color-palette-generator/)
 [![GitHub Stars](https://img.shields.io/github/stars/Hhhpraise/smart-color-palette-generator?style=social)](https://github.com/Hhhpraise/smart-color-palette-generator/stargazers)
 
-> A powerful, intelligent color palette generator that creates harmonious color schemes based on established color theory principles. Perfect for designers, developers, and anyone working with colors.
+> A powerful, intelligent color palette generator that creates harmonious color schemes based on established color theory principles. Perfect for designers, developers, and anyone working with colors — built with accessibility-first design.
 
 ## 🌟 Key Highlights
 
-- **🎯 Professional Grade**: WCAG-compliant contrast checking for accessibility
-- **🎨 5 Color Theory Algorithms**: From complementary to split-complementary schemes
-- **⚡ Real-Time Preview**: See your colors in action with live UI mockups
-- **📱 Fully Responsive**: Works seamlessly across all devices
-- **💾 Export Ready**: Download palettes as PNG or SVG files
-- **🔄 Smart Shuffle**: Rearrange colors while maintaining harmony
+- **🎯 Professional Grade**: WCAG 2.1 compliant contrast checking with AAA, AA, Large Text and Fail tier ratings
+- **🎨 5 Color Theory Algorithms**: Monochromatic, Complementary, Analogous, Triadic, and Split-Complementary
+- **⚡ Real-Time Live Preview**: See your palette applied to a realistic website mockup — nav, hero, buttons, cards, and footer update dynamically
+- **👁️ Color Blindness Simulation**: View palettes through Protanopia, Deuteranopia, and Tritanopia lenses using LMS-space projection (Brettel-Viénot-Mollon 1999)
+- **🖼️ 24 Curated Palettes**: Pre-built palettes organized by mood and use-case — Sunset Boulevard, Nordic Frost, Cyberpunk Neon, and more
+- **🔬 Compare Mode**: Side-by-side contrast grid between any two palettes with WCAG pass-rate summary
+- **📦 Bulk Generate**: Create 12 palette variations from a single base color across all algorithms
+- **💾 Multi-Format Export**: Download as PNG, SVG, or PDF; copy as Tailwind config, CSS variables, or raw hex
+- **📱 Fully Responsive**: Works seamlessly across all devices with dark and light themes
 
 ## ✨ Features
 
 ### 🎨 Core Functionality
-- **Intelligent Color Input**: 
-  - HEX code input with real-time validation
-  - Visual color picker for intuitive selection
-  - Auto-sync between input methods
-  
-- **Advanced Color Theory Algorithms**:
-  - **Complementary** - Perfect contrast pairs for bold designs
-  - **Analogous** - Harmonious adjacent colors for natural feel
-  - **Triadic** - Balanced three-color schemes for vibrant results
-  - **Monochromatic** - Elegant single-hue variations for sophistication
-  - **Split-Complementary** - Sophisticated contrast combinations
-  
-- **Interactive Palette Display**: 
-  - One-click color copying to clipboard
-  - RGB and HSL value display
-  - Contrast ratio warnings for accessibility
 
-### 🚀 Advanced Features
-- **WCAG Accessibility Checker**: 
-  - Real-time contrast ratio analysis
-  - Text readability warnings
-  - Compliance scoring system
-  
-- **Live Design Preview**: 
-  - Realistic UI mockups
-  - Button styling examples
-  - Background/foreground testing
-  
-- **Professional Export Options**:
-  - High-quality PNG downloads
-  - Scalable SVG exports
-  - Custom sizing and labeling
-  
-- **Smart Color Management**:
-  - Random color inspiration generator
-  - Palette shuffling while maintaining harmony
-  - Color information tooltips
+- **Intelligent Color Input**: HEX code input with real-time validation, visual color picker, auto-sync between input methods
+- **5 Color Theory Algorithms**: Complementary (180° hue), Analogous (±30°), Triadic (120° spacing), Monochromatic (saturation/lightness), Split-Complementary (base + two adjacent to complement)
+- **Interactive Palette Swatches**: One-click color copying, RGB/HSL value display, contrast ratio badges with WCAG tier labels, drag-to-reorder, lock individual colors during regeneration, double-click for tints & shades explorer
+
+### 👁️ Accessibility & Color Blindness
+
+- **WCAG Contrast Scoring**: Real-time rating per swatch (AAA ≥7:1, AA ≥4.5:1, Large Text ≥3:1, Fail <3:1) with detailed tooltip explanations
+- **Readability Optimization**: Auto-arrange palette order for best text readability, shuffle for quick reordering
+- **Color Blindness Simulation**: Click any of the four CVD buttons (Normal, Protanopia, Deuteranopia, Tritanopia) in the live preview panel to see how your palette renders for different types of color vision deficiency. Uses scientifically-accurate LMS-space projection matrices (Machado 2009 / Viénot-Brettel-Mollon).
+
+### 🖼️ Gallery & Bulk Generation
+
+- **24 Curated Palettes**: Professionally designed palettes organized by theme — from "Arctic Monochrome" to "Cyberpunk Neon" to "Espresso Shot". Each palette is tagged (e.g. warm, cool, nature, tech, luxury) and one click applies it to the live preview.
+- **Bulk Generate**: Click "Generate 12 Variations" to produce one palette for each harmony algorithm plus 7 shuffled variants — all at once from your current base color.
+
+### 🔬 Compare Mode
+
+- **Side-by-Side Contrast Grid**: Click the **Compare** button to open a modal that shows a full contrast ratio matrix between your current palette and any saved favorite or curated gallery palette.
+- **WCAG Pass-Rate Summary**: See at a glance what percentage of color pairings meet WCAG AA (≥4.5:1).
+- **Works with favorites and curated palettes**: No need to save anything first — compare against any of the 24 built-in palettes.
+
+### 📦 Export Options
+
+- **PNG**: High-quality raster export with gradient background and color labels
+- **SVG**: Scalable vector export for design tools
+- **PDF**: Landscape PDF with gradient background and WCAG rating overlay
+- **Tailwind Config**: Copy a ready-to-use `tailwind.config.js` color extension
+- **CSS Variables**: Copy `:root` custom properties for any web project
+- **Copy All**: Bulk copy all hex codes, one per line
+- **Share URL**: Copy a shareable link with current color and algorithm encoded
+
+### 🛠️ Tools
+
+- **Image Color Extraction**: Upload or drag-and-drop an image to extract its 6 dominant colors via color quantization
+- **Gradient Builder**: Visual gradient editor with angle control, radial/linear toggle, and CSS copy
+- **Palette History**: Automatic history of up to 50 generated palettes with time-ago labels
+- **Favorites System**: Save and name palettes to a persistent favorites list (stored in localStorage)
+
+### 🎭 Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Space` | Random base color |
+| `1`–`5` | Select harmony algorithm |
+| `Enter` | Generate palette (when hex input is focused) |
 
 ## 🌐 Live Demo
 
@@ -62,17 +74,20 @@
 
 ## 🛠️ Technology Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **HTML5** | Structure & Semantic Markup | Latest |
-| **CSS3** | Styling & Animations | Latest |
-| **JavaScript ES6+** | Logic & Interactivity | Latest |
-| **Canvas API** | Image Export Functionality | Native |
-| **GitHub Pages** | Hosting & Deployment | - |
+| Technology | Purpose |
+|------------|---------|
+| **HTML5** | Structure & semantic markup |
+| **CSS3** | Custom properties, animations, dark/light themes |
+| **JavaScript ES6+** | Color theory math, LMS color space transforms, drag-drop, localStorage |
+| **Canvas API** | PNG export rendering |
+| **jsPDF** | PDF export with gradient backgrounds |
+| **Font Awesome 6** | Iconography |
+| **Google Fonts** | Syne (display), DM Sans (body), DM Mono (code) |
 
 ## 📋 Quick Start
 
 ### 🔧 Prerequisites
+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Git (for development)
 
@@ -86,83 +101,77 @@
 
 2. **Run locally**
    ```bash
-   # Option 1: Direct file opening
+   # Option 1: Open directly in browser
    open index.html
-   
+
    # Option 2: Local server (recommended for development)
    python -m http.server 8000
    # Then visit http://localhost:8000
-   
+
    # Option 3: Using Node.js
    npx serve .
    ```
 
 3. **Deploy to GitHub Pages**
    ```bash
-   # Push to your GitHub repository
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Deploy updates"
    git push origin main
-   
-   # Enable GitHub Pages in repository settings
-   # Your site will be live at: https://yourusername.github.io/smart-color-palette-generator/
    ```
 
 ## 🎯 How to Use
 
-### 1. **Choose Your Base Color**
-   - Enter a HEX code (e.g., `#FF5733`) in the input field
-   - Or click the color picker for visual selection
-   - Both inputs sync automatically
+1. **Choose Your Base Color** — Enter a HEX code or use the color picker. Press `Space` for random inspiration.
+2. **Select Color Harmony** — Pick from 5 algorithms. Each harmony button shows a live preview of the colors it will generate.
+3. **Interact with Your Palette** — Click swatches to copy, double-click for tints & shades, drag to reorder, lock colors to preserve them during regeneration.
+4. **Preview in Context** — Switch to the Palette tab to see colors applied to a realistic website mockup. Toggle color blindness simulation in the CVD bar.
+5. **Browse the Gallery** — Explore 24 curated palettes in the Gallery tab, or bulk-generate 12 variations from your base color.
+6. **Compare Palettes** — Click the Compare button to see a contrast matrix between any two palettes.
+7. **Export & Save** — Download as PNG/SVG/PDF, copy as Tailwind/CSS vars, or share a URL.
 
-### 2. **Select Color Harmony**
-   - Choose from 5 different color theory algorithms
-   - Each generates 5-6 perfectly matched colors
-   - Preview updates instantly
+## 🎨 Color Theory Reference
 
-### 3. **Interact with Your Palette**
-   - Click any color swatch to copy HEX code
-   - View RGB/HSL values in hover tooltips
-   - Check accessibility warnings for text contrast
+### Monochromatic
+Variations of a single hue by adjusting lightness and saturation. Creates elegant, cohesive designs. Best for corporate sites, minimalist interfaces, luxury brands.
 
-### 4. **Preview in Context**
-   - See colors applied to realistic UI elements
-   - Test button styling and backgrounds
-   - Shuffle arrangement while maintaining harmony
+### Complementary
+Colors 180° apart on the color wheel. Maximum contrast and visual impact. Best for CTAs, hero sections, bold branding.
 
-### 5. **Export & Save**
-   - Download as PNG for presentations
-   - Export as SVG for scalable designs
-   - Perfect for design handoffs and documentation
+### Analogous
+Colors adjacent on the wheel (±30–60°). Natural harmony with gentle transitions. Best for gradients, nature themes, subtle UI.
 
-## 🧮 Color Theory Deep Dive
+### Triadic
+Three colors evenly spaced at 120° intervals. Balanced and vibrant without being jarring. Best for playful interfaces, creative projects, data visualization.
 
-### 🔴 Complementary Colors
-- **Method**: 180° hue rotation
-- **Use Case**: High contrast, attention-grabbing designs
-- **Best For**: Call-to-action buttons, headers, brand contrast
+### Split-Complementary
+Base color plus the two colors adjacent to its complement. Sophisticated contrast with more nuance than pure complementary. Best for complex interfaces, editorial design, premium products.
 
-### 🟠 Analogous Schemes
-- **Method**: ±30° hue variations
-- **Use Case**: Natural, harmonious combinations
-- **Best For**: Gradients, nature themes, subtle branding
+## 👁️ Color Blindness Simulation
 
-### 🟡 Triadic Palettes
-- **Method**: 120° hue spacing
-- **Use Case**: Balanced, vibrant designs
-- **Best For**: Playful interfaces, children's products, creative projects
+The simulator uses the scientifically-validated LMS (Long, Medium, Short wavelength) cone response model with Viénot-Brettel-Mollon dichromatic projection matrices:
 
-### 🟢 Monochromatic Variations
-- **Method**: Saturation and lightness adjustments
-- **Use Case**: Elegant, professional appearance
-- **Best For**: Corporate sites, minimalist designs, luxury brands
+- **Protanopia**: Absent or non-functional L-cones (red-deficient) — affects ~1% of males
+- **Deuteranopia**: Absent or non-functional M-cones (green-deficient) — affects ~1% of males
+- **Tritanopia**: Absent or non-functional S-cones (blue-deficient) — very rare (~0.003%)
 
-### 🔵 Split-Complementary
-- **Method**: Base + two colors adjacent to complement
-- **Use Case**: Sophisticated contrast with harmony
-- **Best For**: Complex interfaces, artistic projects, premium products
+The algorithm converts sRGB to linear RGB, projects through the Hunt-Pointer-Estevez LMS transform, applies the deficiency-specific projection matrix, and converts back. This ensures results match what a dichromatic viewer would actually perceive rather than a simple hue-shift approximation.
 
+## 📁 Project Structure
 
+```
+smart-color-palette-generator/
+├── index.html              # Main HTML with all UI structure
+├── style.css               # Core design system (tokens, layout, dark theme)
+├── style-additions.css     # Extended styles (light theme, tabs, modals, gallery, CVD, compare)
+├── js/
+│   ├── color-theory.js     # Color math: HSL/HEX/RGB conversion, harmony algorithms, contrast
+│   ├── storage.js          # localStorage manager (history, favorites, settings)
+│   ├── app-core.js         # Main app controller (rendering, events, palette generation)
+│   ├── app-gallery.js      # Curated palettes, bulk generate, compare mode
+│   └── app-tools.js        # CVD simulation, image extraction, gradient builder
+├── LICENSE
+└── README.md
+```
 
 ## 🌐 Browser Support
 
@@ -175,6 +184,20 @@
 | Mobile Safari | 12+ | ✅ Fully Supported |
 | Chrome Mobile | 70+ | ✅ Fully Supported |
 
+## 🔧 Troubleshooting
+
+**"The live preview / CVD simulation / gallery / compare isn't working"**
+
+If you've recently updated the code and features aren't appearing, your browser may have cached the old JavaScript files. Hard-refresh with **Ctrl+Shift+R** (Windows/Linux) or **Cmd+Shift+R** (Mac) to force-reload all assets.
+
+**"The color blindness buttons don't change the preview"**
+
+Make sure you have generated a palette first (click **Generate Palette**). The CVD simulation applies to the live website preview in the Palette tab. Watch the nav, hero, buttons, and feature cards change color as you toggle between Normal, Protanopia, Deuteranopia, and Tritanopia.
+
+**"The Compare button says I need to save favorites first"**
+
+The Compare feature now works with both your saved favorites AND the 24 built-in curated gallery palettes. If you haven't saved any favorites, you'll still see the curated options in the dropdown. Click **Compare**, pick a palette from the "Curated Gallery" group, and the contrast grid appears instantly.
+
 ## 🤝 Contributing
 
 We welcome contributions! Here's how you can help:
@@ -184,11 +207,6 @@ We welcome contributions! Here's how you can help:
 - Include browser version and steps to reproduce
 - Provide screenshots for UI issues
 
-### 💡 Suggesting Features
-- Check existing issues first
-- Describe the feature and its benefits
-- Consider implementation complexity
-
 ### 🔄 Pull Requests
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
@@ -197,39 +215,24 @@ We welcome contributions! Here's how you can help:
 5. Submit a pull request with a detailed description
 
 ### 📋 Development Guidelines
-- **Code Style**: Follow ES6+ standards
+- **Code Style**: ES6+ standards, `'use strict'` mode
 - **Responsive Design**: Test on mobile devices
-- **Accessibility**: Maintain WCAG compliance
-- **Performance**: Optimize for fast loading
-- **Documentation**: Comment complex algorithms
-
-
-## 📊 Performance
-
-| Metric | Value | Target |
-|--------|-------|--------|
-| **Load Time** | < 1s | ✅ |
-| **Time to Interactive** | < 2s | ✅ |
-| **Bundle Size** | < 100KB | ✅ |
-| **Lighthouse Score** | 95+ | ✅ |
-
+- **Accessibility**: Maintain WCAG 2.1 compliance
+- **Performance**: Keep bundle lightweight (<100KB)
+- **Documentation**: Comment complex algorithms (especially color math)
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
-### 🎉 What this means:
-- ✅ **Use** - Personal and commercial projects
-- ✅ **Modify** - Customize to your needs
-- ✅ **Distribute** - Share with others
-- ✅ **Private Use** - No obligation to share changes
+✅ Use in personal and commercial projects · ✅ Modify and customize · ✅ Distribute and share · ✅ No obligation to share changes
 
 ## 🙏 Acknowledgments
 
-- **Color Theory**: Based on traditional design principles and modern web standards
-- **Accessibility**: WCAG 2.1 guidelines implementation
-- **Export Functionality**: Canvas API and SVG specifications
-- **Community**: Thanks to all contributors and users who provided feedback
+- **Color Theory**: Traditional design principles adapted for digital
+- **Accessibility**: WCAG 2.1 contrast ratio guidelines
+- **CVD Simulation**: Machado 2009 / Viénot-Brettel-Mollon 1999 LMS projection model
+- **Export**: Canvas API, SVG spec, jsPDF library
 
 ## 📬 Connect & Support
 
