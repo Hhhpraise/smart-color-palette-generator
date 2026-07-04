@@ -253,6 +253,9 @@ const App = {
                 const idx = parseInt(e.code.slice(-1)) - 1;
                 $$('.harmony-btn')[idx]?.click();
             }
+            if (e.code === 'KeyD' && !e.target.matches('input, textarea') && !e.ctrlKey && !e.metaKey) {
+                this.toggleTheme();
+            }
         });
     },
 

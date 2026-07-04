@@ -72,6 +72,11 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
     margin-bottom: var(--gap);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .tab-btn {
@@ -87,6 +92,8 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    user-select: none;
+    -webkit-user-select: none;
 }
 .tab-btn:hover {
     color: var(--text);
@@ -96,6 +103,24 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
     background: var(--accent-dim);
     color: var(--accent);
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    font-weight: 600;
+}
+
+/* Active tab indicator — subtle top edge highlight */
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 0 0 3px 3px;
+}
+
+.tab-btn {
+    position: relative;
 }
 
 .tab-content {
@@ -104,10 +129,25 @@ body, .panel, .btn, .harmony-btn, .app-header, .app-footer {
 
 .tab-pane {
     display: none;
-    animation: fadeIn 0.28s var(--ease-out);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: tabFadeOut 0.15s var(--ease-out) forwards;
 }
 .tab-pane.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    animation: tabFadeIn 0.28s var(--ease-out) forwards;
+}
+
+@keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tabFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(8px); }
 }
 
 @keyframes fadeIn {
